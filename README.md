@@ -17,7 +17,7 @@ Prototipe web **Knowledge Management System (KMS)** untuk UMKM kedai kopi. Aplik
 - Stok bahan: catat masuk/keluar, peringatan stok menipis
 - Supplier & bahan: kontak, harga terakhir, rating, cara penyimpanan
 - Penjualan per menu
-- Log komplain: jenis, solusi, penindaklanjut
+- Log komplain: jenis, solusi, penindaklanjut 
 
 **Dashboard**
 - Menu terlaris, jam ramai, bahan stok menipis, antrean validasi

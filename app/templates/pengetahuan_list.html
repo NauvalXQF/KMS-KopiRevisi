@@ -1,14 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Pustaka Pengetahuan{% endblock %}
+{% block title %}Daftar Resep{% endblock %}
 {% block content %}
 
 <div class="page-header">
   <div>
-    <h2 class="page-title">Pustaka Pengetahuan</h2>
+    <h2 class="page-title">Daftar Resep</h2>
     <p class="page-subtitle">Resep standar, SOP operasional, data supplier, dan penanganan komplain.</p>
   </div>
   <a href="{{ url_for('pengetahuan.baru') }}" class="btn btn-dark">
-    <i class="bi bi-plus-circle"></i> Tulis Pengetahuan
+    <i class="bi bi-plus-circle"></i> Tulis Resep
   </a>
 </div>
 
@@ -122,7 +122,7 @@
         <div class="empty-state-icon">
           <i class="bi bi-journal-x"></i>
         </div>
-        <h5>Tidak ada pengetahuan ditemukan</h5>
+        <h5>Tidak ada resep ditemukan</h5>
         <p>Coba ubah kata kunci atau pilih kategori yang berbeda.</p>
         <a href="{{ url_for('pengetahuan.daftar') }}" class="btn btn-outline-dark btn-sm">
           <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Pencarian
@@ -132,5 +132,27 @@
   </div>
 {% endfor %}
 </div>
+
+{% if pagination and pagination.pages > 1 %}
+<nav aria-label="Navigasi halaman resep" class="mt-4">
+  <ul class="pagination justify-content-center mb-0">
+    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('pengetahuan.daftar', q=q or '', kategori=kat_id or '', page=pagination.prev_num) }}">‹</a>
+    </li>
+    {% for pnum in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+      {% if pnum %}
+      <li class="page-item {% if pnum == pagination.page %}active{% endif %}">
+        <a class="page-link" href="{{ url_for('pengetahuan.daftar', q=q or '', kategori=kat_id or '', page=pnum) }}">{{ pnum }}</a>
+      </li>
+      {% else %}
+      <li class="page-item disabled"><span class="page-link">…</span></li>
+      {% endif %}
+    {% endfor %}
+    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+      <a class="page-link" href="{{ url_for('pengetahuan.daftar', q=q or '', kategori=kat_id or '', page=pagination.next_num) }}">›</a>
+    </li>
+  </ul>
+</nav>
+{% endif %}
 
 {% endblock %}

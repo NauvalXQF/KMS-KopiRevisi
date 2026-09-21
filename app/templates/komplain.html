@@ -2,20 +2,22 @@
 {% block title %}Log Komplain Pelanggan{% endblock %}
 {% block content %}
 <div class="page-header">
-  <h2>Log Komplain & Penanganan</h2>
-  <p>Pencatatan masalah rasa kopi, pelayanan, atau fasilitas untuk evaluasi SOP operasional.</p>
+  <div>
+    <h2 class="page-title">Log Komplain & Penanganan</h2>
+    <p class="page-subtitle">Pencatatan masalah rasa kopi, pelayanan, atau fasilitas untuk evaluasi SOP operasional.</p>
+  </div>
 </div>
 
 <div class="row g-4">
   <!-- Daftar Log Komplain -->
   <div class="col-lg-7">
     <div class="d-flex justify-content-between align-items-center mb-3">
-      <h6 class="fw-bold text-muted text-uppercase small mb-0">Riwayat Komplain Pelanggan</h6>
-      <span class="badge bg-light text-dark border">{{ items|length }} Laporan</span>
+      <span class="section-label">Riwayat Komplain Pelanggan</span>
+      <span class="badge badge-soft-neutral">{{ items|length }} Laporan</span>
     </div>
 
     {% for k in items %}
-    <div class="card shadow-sm mb-3">
+    <div class="card mb-3">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center mb-2">
           <div class="d-flex align-items-center gap-2">
@@ -31,7 +33,7 @@
           <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ k.tanggal }}</small>
         </div>
 
-        <p class="mb-2 text-secondary small bg-light p-2 rounded">{{ k.deskripsi }}</p>
+        <p class="preview-text mb-2">{{ k.deskripsi }}</p>
 
         {% if k.solusi %}
         <div class="small mb-1">
@@ -76,19 +78,23 @@
       </div>
     </div>
     {% else %}
-    <div class="card p-5 text-center text-muted shadow-sm">
-      <i class="bi bi-emoji-smile fs-1 text-success mb-2"></i>
-      <h6 class="fw-bold">Tidak ada catatan komplain aktif</h6>
-      <p class="small text-muted mb-0">Semua operasional bar dan kasir berjalan lancar.</p>
+    <div class="card">
+      <div class="empty-state">
+        <div class="empty-state-icon" style="background:var(--status-success-bg); color:var(--status-success-text);">
+          <i class="bi bi-emoji-smile"></i>
+        </div>
+        <h5>Tidak ada catatan komplain aktif</h5>
+        <p>Semua operasional bar dan kasir berjalan lancar.</p>
+      </div>
     </div>
     {% endfor %}
   </div>
 
   <!-- Form Tambah Komplain -->
   <div class="col-lg-5">
-    <div class="card shadow-sm">
-      <div class="card-header py-3">
-        <i class="bi bi-exclamation-octagon me-2 text-danger"></i> Catat Komplain Baru
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-exclamation-octagon me-2" style="color:var(--status-danger-text);"></i> Catat Komplain Baru
       </div>
       <div class="card-body">
         <form method="post" action="{{ url_for('komplain.tambah') }}">

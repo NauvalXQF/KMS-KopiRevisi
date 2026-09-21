@@ -46,7 +46,11 @@ def _build_db_uri() -> str:
 def create_app():
     app = Flask(__name__)
     load_dotenv(BASE_DIR / ".env")
-    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-kms-kopi-revisi-2026")
+    secret = os.getenv("SECRET_KEY", "")
+    if not secret:
+        print("[Kopi Revisi] PERINGATAN: SECRET_KEY kosong, pakai default dev. Isi .env sebelum demo/presentasi.")
+        secret = "dev-kms-kopi-revisi-2026"
+    app.config["SECRET_KEY"] = secret
     app.config["SQLALCHEMY_DATABASE_URI"] = _build_db_uri()
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["UPLOAD_FOLDER"] = str(BASE_DIR / "app" / "static" / "uploads")

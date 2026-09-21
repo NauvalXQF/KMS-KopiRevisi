@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{% if p %}Edit{% else %}Tulis Baru{% endif %} Pengetahuan{% endblock %}
+{% block title %}{% if p %}Edit{% else %}Tulis Baru{% endif %} Resep{% endblock %}
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-lg-8">
@@ -8,22 +8,22 @@
     <nav aria-label="breadcrumb" class="mb-3">
       <ol class="breadcrumb mb-0" style="font-size: 0.82rem;">
         <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}" class="text-muted"><i class="bi bi-house me-1"></i>Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="{{ url_for('pengetahuan.daftar') }}" class="text-muted">Pustaka Pengetahuan</a></li>
-        <li class="breadcrumb-item active" aria-current="page">{% if p %}Edit Pengetahuan{% else %}Tulis Baru{% endif %}</li>
+        <li class="breadcrumb-item"><a href="{{ url_for('pengetahuan.daftar') }}" class="text-muted">Daftar Resep</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{% if p %}Edit Resep{% else %}Tulis Baru{% endif %}</li>
       </ol>
     </nav>
 
     <div class="mb-3">
       <a href="{{ url_for('pengetahuan.daftar') }}" class="btn btn-sm btn-outline-secondary">
-        <i class="bi bi-arrow-left"></i> Kembali ke Pustaka
+        <i class="bi bi-arrow-left"></i> Kembali ke Daftar Resep
       </a>
     </div>
 
-    <div class="card shadow-sm border-0">
+    <div class="card border-0">
       <div class="card-header py-3">
         <h5 class="fw-bold mb-0">
           <i class="bi bi-journal-plus me-1 text-primary"></i>
-          {% if p %}Edit & Ajukan Revisi Pengetahuan{% else %}Form Pengetahuan Baru{% endif %}
+          {% if p %}Edit & Ajukan Revisi Resep{% else %}Form Resep Baru{% endif %}
         </h5>
       </div>
       <div class="card-body p-4">
@@ -36,7 +36,7 @@
 
         <form method="post" enctype="multipart/form-data">
           <div class="mb-3">
-            <label class="form-label">Judul Pengetahuan</label>
+            <label class="form-label">Judul Resep</label>
             <input name="judul" class="form-control form-control-lg" value="{{ p.judul if p else '' }}" placeholder="cth: Resep Standar Es Kopi Susu Aren (16 oz)" required>
           </div>
 
@@ -71,7 +71,7 @@
           <div class="d-flex justify-content-end gap-2 border-top pt-3">
             <a href="{{ url_for('pengetahuan.daftar') }}" class="btn btn-outline-secondary">Batal</a>
             <button type="submit" class="btn btn-dark">
-              <i class="bi bi-send-check me-1"></i> {% if p %}Simpan Perubahan{% else %}Kirim Pengetahuan{% endif %}
+              <i class="bi bi-send-check me-1"></i> {% if p %}Simpan Perubahan{% else %}Kirim Resep{% endif %}
             </button>
           </div>
         </form>

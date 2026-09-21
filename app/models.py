@@ -1,5 +1,9 @@
 """Models KMS Kopi Revisi."""
-from datetime import datetime
+from datetime import datetime, timezone
+
+
+def _now():
+    return datetime.now(timezone.utc)
 
 from app import db
 
@@ -11,7 +15,7 @@ class Pengguna(db.Model):
     peran = db.Column(db.Enum("pemilik", "karyawan"), nullable=False, default="karyawan")
     pin_hash = db.Column(db.String(255), nullable=False)
     aktif = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=_now)
 
 
 class Kategori(db.Model):
@@ -37,8 +41,8 @@ class Pengetahuan(db.Model):
     penulis_id = db.Column(db.Integer, db.ForeignKey("pengguna.id"))
     validator_id = db.Column(db.Integer, db.ForeignKey("pengguna.id"))
     catatan_validasi = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=_now)
+    updated_at = db.Column(db.DateTime, default=_now, onupdate=_now)
 
     kategori = db.relationship("Kategori", backref="pengetahuan")
     penulis = db.relationship("Pengguna", foreign_keys=[penulis_id])
@@ -53,7 +57,7 @@ class PengetahuanVersi(db.Model):
     judul = db.Column(db.String(200), nullable=False)
     deskripsi = db.Column(db.Text, nullable=False)
     diubah_oleh = db.Column(db.Integer, db.ForeignKey("pengguna.id"))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=_now)
 
 
 class Bahan(db.Model):
@@ -91,7 +95,7 @@ class Stok(db.Model):
     bahan_id = db.Column(db.Integer, db.ForeignKey("bahan.id"), nullable=False)
     tipe = db.Column(db.Enum("masuk", "keluar"), nullable=False)
     jumlah = db.Column(db.Float, nullable=False)
-    tanggal = db.Column(db.DateTime, default=datetime.utcnow)
+    tanggal = db.Column(db.DateTime, default=_now)
     keterangan = db.Column(db.Text)
     dicatat_oleh = db.Column(db.Integer, db.ForeignKey("pengguna.id"))
 
@@ -104,14 +108,14 @@ class Penjualan(db.Model):
     nama_menu = db.Column(db.String(100), nullable=False)
     jumlah = db.Column(db.Integer, nullable=False, default=1)
     harga_satuan = db.Column(db.Numeric(12, 2), default=0)
-    waktu = db.Column(db.DateTime, default=datetime.utcnow)
+    waktu = db.Column(db.DateTime, default=_now)
     dicatat_oleh = db.Column(db.Integer, db.ForeignKey("pengguna.id"))
 
 
 class Komplain(db.Model):
     __tablename__ = "komplain"
     id = db.Column(db.Integer, primary_key=True)
-    tanggal = db.Column(db.DateTime, default=datetime.utcnow)
+    tanggal = db.Column(db.DateTime, default=_now)
     jenis = db.Column(db.String(100), nullable=False)
     deskripsi = db.Column(db.Text, nullable=False)
     solusi = db.Column(db.Text)
@@ -131,4 +135,4 @@ class Notifikasi(db.Model):
     dibaca = db.Column(db.Boolean, default=False)
     terkait_tipe = db.Column(db.String(50))  # mis. 'pengetahuan'
     terkait_id = db.Column(db.Integer)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=_now)

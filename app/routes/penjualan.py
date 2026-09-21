@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 
 from flask import Blueprint, flash, redirect, render_template, request, url_for
 from sqlalchemy import func
@@ -34,7 +34,7 @@ def tambah():
         return redirect(url_for("penjualan.daftar"))
     user = get_current_user()
     db.session.add(Penjualan(nama_menu=nama_menu, jumlah=jumlah, harga_satuan=harga,
-                             waktu=datetime.now(), dicatat_oleh=user.id))
+                             waktu=datetime.now(timezone.utc), dicatat_oleh=user.id))
     db.session.commit()
     flash("Penjualan dicatat.", "success")
     return redirect(url_for("penjualan.daftar"))

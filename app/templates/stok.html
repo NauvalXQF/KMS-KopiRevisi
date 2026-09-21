@@ -93,7 +93,7 @@
     </div>
 
     <!-- Log Mutasi -->
-    <div class="card shadow-sm">
+    <div class="card">
       <div class="card-header">
         <i class="bi bi-arrow-down-up me-2" style="color:var(--caramel-500);"></i> Riwayat Mutasi Terakhir
       </div>
@@ -173,7 +173,7 @@
     </div>
 
     <!-- Tambah Bahan Baru -->
-    <div class="card shadow-sm">
+    <div class="card">
       <div class="card-header">
         <i class="bi bi-plus-circle me-2" style="color:var(--text-muted);"></i>
         Daftarkan Bahan Baru
@@ -212,32 +212,4 @@
   </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const rows = document.querySelectorAll('.stok-row');
-  let menipisCount = 0;
-  let amanCount = 0;
-  rows.forEach(r => {
-    if (r.dataset.status === 'menipis') menipisCount++;
-    else amanCount++;
-  });
-  const elM = document.getElementById('cntMenipis');
-  const elA = document.getElementById('cntAman');
-  if (elM) elM.textContent = menipisCount;
-  if (elA) elA.textContent = amanCount;
-});
-
-function filterStok(type, btn) {
-  document.querySelectorAll('#stokFilterTabs .filter-chip').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  const rows = document.querySelectorAll('.stok-row');
-  rows.forEach(r => {
-    if (type === 'all' || r.dataset.status === type) {
-      r.style.display = '';
-    } else {
-      r.style.display = 'none';
-    }
-  });
-}
-</script>
 {% endblock %}

@@ -12,6 +12,8 @@ bp = Blueprint("pengetahuan", __name__)
 def daftar():
     q = request.args.get("q", "").strip()
     kat_id = request.args.get("kategori", "").strip()
+    page = request.args.get("page", 1, type=int)
+    per_page = 12
     query = Pengetahuan.query
     # Karyawan hanya lihat yang terbit + miliknya sendiri; pemilik lihat semua.
     user = get_current_user()
@@ -26,9 +28,9 @@ def daftar():
         query = query.filter(
             (Pengetahuan.judul.like(like)) | (Pengetahuan.deskripsi.like(like))
         )
-    items = query.order_by(Pengetahuan.updated_at.desc()).all()
+    items = query.order_by(Pengetahuan.updated_at.desc()).paginate(page=page, per_page=per_page, error_out=False)
     kategoris = Kategori.query.order_by(Kategori.nama).all()
-    return render_template("pengetahuan_list.html", items=items, kategoris=kategoris, q=q, kat_id=kat_id)
+    return render_template("pengetahuan_list.html", items=items.items, pagination=items, kategoris=kategoris, q=q, kat_id=kat_id)
 
 
 @bp.route("/pengetahuan/<int:pid>")

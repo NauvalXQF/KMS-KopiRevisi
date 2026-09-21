@@ -3,10 +3,10 @@
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-lg-8">
-    <div class="d-flex justify-content-between align-items-center page-header mb-3">
+    <div class="page-header">
       <div>
-        <h2>Notifikasi Sistem</h2>
-        <p>Pemberitahuan perubahan status validasi pengetahuan dan peringatan operasional.</p>
+        <h2 class="page-title">Notifikasi Sistem</h2>
+        <p class="page-subtitle">Pemberitahuan perubahan status validasi resep dan peringatan operasional.</p>
       </div>
       <form method="post" action="{{ url_for('notifikasi.baca_semua') }}">
         <button class="btn btn-sm btn-outline-dark">
@@ -16,15 +16,15 @@
     </div>
 
     {% for n in items %}
-    <div class="card shadow-sm mb-2 {% if not n.dibaca %}border-warning{% endif %}">
+    <div class="card mb-2 {% if not n.dibaca %}border-warning{% endif %}">
       <div class="card-body d-flex justify-content-between align-items-start gap-3">
         <div class="d-flex gap-3 align-items-start">
-          <div class="rounded-circle d-flex align-items-center justify-content-center mt-1" style="width: 36px; height: 36px; background: {% if not n.dibaca %}var(--caramel-100){% else %}var(--bg-surface-secondary){% endif %}; color: {% if not n.dibaca %}var(--coffee-700){% else %}var(--text-muted){% endif %};">
+          <div class="rounded-circle d-flex align-items-center justify-content-center mt-1" style="width: 36px; height: 36px; background: {% if not n.dibaca %}var(--caramel-100){% else %}var(--bg-surface-2){% endif %}; color: {% if not n.dibaca %}var(--coffee-700){% else %}var(--text-muted){% endif %};">
             <i class="bi {% if not n.dibaca %}bi-bell-fill{% else %}bi-bell{% endif %}"></i>
           </div>
           <div>
             <div class="d-flex align-items-center gap-2 mb-1">
-              <h6 class="fw-bold mb-0 text-dark">{{ n.judul }}</h6>
+              <h6 class="fw-bold mb-0" style="color:var(--text-primary);">{{ n.judul }}</h6>
               {% if not n.dibaca %}
                 <span class="badge badge-soft-warning">Baru</span>
               {% endif %}
@@ -36,7 +36,7 @@
 
         {% if not n.dibaca %}
         <form method="post" action="{{ url_for('notifikasi.baca', nid=n.id) }}">
-          <button class="btn btn-sm btn-outline-secondary text-nowrap" title="Tandai sudah dibaca">
+          <button class="btn btn-sm btn-outline-dark text-nowrap" title="Tandai sudah dibaca">
             <i class="bi bi-check2"></i> Dibaca
           </button>
         </form>
@@ -44,10 +44,12 @@
       </div>
     </div>
     {% else %}
-    <div class="card p-5 text-center text-muted shadow-sm">
-      <i class="bi bi-bell-slash fs-1 text-muted mb-2"></i>
-      <h6 class="fw-bold">Belum ada notifikasi</h6>
-      <p class="small text-muted mb-0">Semua info terbaru akan muncul di sini.</p>
+    <div class="card">
+      <div class="empty-state">
+        <div class="empty-state-icon"><i class="bi bi-bell-slash"></i></div>
+        <h5>Belum ada notifikasi</h5>
+        <p>Semua info terbaru akan muncul di sini.</p>
+      </div>
     </div>
     {% endfor %}
   </div>

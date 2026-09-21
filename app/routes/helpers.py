@@ -59,6 +59,7 @@ def save_upload(file_storage):
         return None
     ext = file_storage.filename.rsplit(".", 1)[-1].lower() if "." in file_storage.filename else ""
     if ext not in ALLOWED_EXT:
+        flash(f"Format .{ext or '?'} tidak didukung. Gunakan: {', '.join(sorted(ALLOWED_EXT))}.", "warning")
         return None
     fname = f"{uuid.uuid4().hex}_{secure_filename(file_storage.filename)}"
     dest = os.path.join(current_app.config["UPLOAD_FOLDER"], fname)

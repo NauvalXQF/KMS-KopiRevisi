@@ -31,13 +31,14 @@
   /* ── Text ── */
   --text-primary:  #1A1210;
   --text-secondary: #4A4039;
-  --text-muted:    #7A706A;
-  --text-light:    #B0A49E;
+  --text-muted:    #6E645E;
+  --text-light:    #8A7F78;
 
   /* ── Borders ── */
-  --border-strong:  #D4CBBf;
+  --border-strong:  #D4CBBF;
   --border-color:   #E8E0D6;
   --border-subtle:  #F0EBE3;
+  --bg-surface-secondary: #F7F5F1;
 
   /* ── Soft Status Tokens ── */
   --status-success-bg:     #EAF6ED;
@@ -324,7 +325,7 @@ a:hover { color: var(--caramel-500); }
   background: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
   transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
 }
 

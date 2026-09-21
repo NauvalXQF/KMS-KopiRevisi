@@ -10,7 +10,7 @@ bp = Blueprint("komplain", __name__)
 @bp.route("/komplain")
 @login_required
 def daftar():
-    items = Komplain.query.order_by(Komplain.tanggal.desc()).all()
+    items = Komplain.query.order_by(Komplain.tanggal.desc()).limit(100).all()
     return render_template("komplain.html", items=items)
 
 
