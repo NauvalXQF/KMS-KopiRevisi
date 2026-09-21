@@ -1,91 +1,115 @@
 {% extends "base.html" %}
 {% block title %}Pustaka Pengetahuan{% endblock %}
 {% block content %}
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center page-header gap-3">
+
+<div class="page-header">
   <div>
-    <h2>Pustaka Pengetahuan</h2>
-    <p>Pusat dokumentasi resep standar, SOP operasional, kontak supplier, dan penanganan komplain.</p>
+    <h2 class="page-title">Pustaka Pengetahuan</h2>
+    <p class="page-subtitle">Resep standar, SOP operasional, data supplier, dan penanganan komplain.</p>
   </div>
   <a href="{{ url_for('pengetahuan.baru') }}" class="btn btn-dark">
-    <i class="bi bi-plus-circle me-1"></i> Tulis Pengetahuan
+    <i class="bi bi-plus-circle"></i> Tulis Pengetahuan
   </a>
 </div>
 
-<!-- Search & Filter Bar -->
-<div class="card p-3 mb-4 border-0 shadow-sm">
-  <form method="get" class="row g-2 align-items-center">
-    <div class="col-md-6">
-      <div class="input-group">
-        <span class="input-group-text bg-white text-muted border-end-0"><i class="bi bi-search"></i></span>
-        <input name="q" value="{{ q or '' }}" class="form-control border-start-0 ps-0" placeholder="Cari kata kunci (resep V60, SOP closing, supplier susu...)">
+<!-- Search + Filter Bar -->
+<div class="card shadow-sm mb-4" style="border-radius: var(--radius-lg);">
+  <div class="card-body pb-0">
+    <form method="get" class="row g-2 align-items-center mb-3">
+      <div class="col-md-7">
+        <div class="input-group">
+          <span class="input-group-text border-end-0" style="background:#fff;">
+            <i class="bi bi-search text-muted"></i>
+          </span>
+          <input name="q" value="{{ q or '' }}" class="form-control border-start-0 ps-1"
+                 placeholder="Cari resep V60, SOP closing, supplier kopi...">
+        </div>
       </div>
-    </div>
-    <div class="col-md-4">
-      <select name="kategori" class="form-select" onchange="this.form.submit()">
-        <option value="">Semua Kategori</option>
-        {% for k in kategoris %}
-        <option value="{{ k.id }}" {% if kat_id==k.id|string %}selected{% endif %}>{{ k.nama }}</option>
-        {% endfor %}
-      </select>
-    </div>
-    <div class="col-md-2">
-      <button class="btn btn-coffee w-100">
-        <i class="bi bi-funnel"></i> Filter
-      </button>
-    </div>
-  </form>
+      <div class="col-md-3">
+        <select name="kategori" class="form-select">
+          <option value="">Semua Kategori</option>
+          {% for k in kategoris %}
+          <option value="{{ k.id }}" {% if kat_id==k.id|string %}selected{% endif %}>{{ k.nama }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-dark w-100">
+          <i class="bi bi-funnel"></i> Filter
+        </button>
+      </div>
+    </form>
 
-  <!-- Quick Category Pills -->
-  <div class="filter-chip-group mt-3 pt-2 border-top">
-    <span class="small text-muted me-1"><i class="bi bi-tag"></i> Kategori:</span>
-    <a href="{{ url_for('pengetahuan.daftar', q=q) }}" class="filter-chip {% if not kat_id %}active{% endif %}">
-      Semua
-    </a>
-    {% for k in kategoris %}
-    <a href="{{ url_for('pengetahuan.daftar', kategori=k.id, q=q) }}" class="filter-chip {% if kat_id==k.id|string %}active{% endif %}">
-      {{ k.nama }}
-    </a>
-    {% endfor %}
+    <!-- Category chips -->
+    <div class="filter-chip-group pb-3 border-top pt-3">
+      <span class="section-label me-1">Kategori:</span>
+      <a href="{{ url_for('pengetahuan.daftar', q=q or '') }}"
+         class="filter-chip {% if not kat_id %}active{% endif %}">
+        Semua
+      </a>
+      {% for k in kategoris %}
+      <a href="{{ url_for('pengetahuan.daftar', kategori=k.id, q=q or '') }}"
+         class="filter-chip {% if kat_id==k.id|string %}active{% endif %}">
+        {{ k.nama }}
+      </a>
+      {% endfor %}
+    </div>
   </div>
 </div>
 
-<!-- Knowledge Cards Grid -->
+<!-- Results info -->
+{% if items %}
+<p class="section-label mb-3">{{ items|length }} dokumen ditemukan</p>
+{% endif %}
+
+<!-- Knowledge Card Grid -->
 <div class="row g-3">
 {% for p in items %}
-  <div class="col-md-6 col-lg-4">
-    <div class="card h-100 card-hoverable shadow-sm">
-      <div class="card-body d-flex flex-column justify-content-between">
-        <div>
-          <div class="d-flex justify-content-between align-items-center gap-1 mb-2">
-            <span class="badge badge-soft-caramel">
-              <i class="bi bi-folder2 me-1"></i>{{ p.kategori.nama if p.kategori else 'Umum' }}
-            </span>
-            <div class="d-flex gap-1">
-              {% if p.status == 'terbit' %}
-                <span class="badge badge-soft-success"><i class="bi bi-check2"></i> Terbit</span>
-              {% elif p.status == 'revisi' %}
-                <span class="badge badge-soft-danger"><i class="bi bi-pencil"></i> Revisi</span>
-              {% else %}
-                <span class="badge badge-soft-warning"><i class="bi bi-clock"></i> {{ p.status }}</span>
-              {% endif %}
-              <span class="badge bg-light text-muted border">v{{ p.versi }}</span>
-            </div>
+  <div class="col-md-6 col-xl-4">
+    <div class="card h-100 knowledge-card">
+      <div class="card-body d-flex flex-column">
+        <!-- Top badges -->
+        <div class="d-flex align-items-center justify-content-between gap-1 mb-2">
+          <span class="badge badge-soft-caramel">
+            <i class="bi bi-folder2 me-1"></i>{{ p.kategori.nama if p.kategori else 'Umum' }}
+          </span>
+          <div class="d-flex gap-1">
+            {% if p.status == 'terbit' %}
+              <span class="badge badge-soft-success"><i class="bi bi-check2"></i> Terbit</span>
+            {% elif p.status == 'revisi' %}
+              <span class="badge badge-soft-danger"><i class="bi bi-pencil"></i> Revisi</span>
+            {% else %}
+              <span class="badge badge-soft-warning"><i class="bi bi-hourglass"></i> Menunggu</span>
+            {% endif %}
+            <span class="badge badge-soft-neutral">v{{ p.versi }}</span>
           </div>
-
-          <h5 class="fw-bold mb-2">
-            <a href="{{ url_for('pengetahuan.detail', pid=p.id) }}" class="text-decoration-none text-dark stretched-link">
-              {{ p.judul }}
-            </a>
-          </h5>
-          <p class="text-muted small mb-3" style="line-height: 1.5;">
-            {{ p.deskripsi[:140] }}{% if p.deskripsi|length > 140 %}...{% endif %}
-          </p>
         </div>
 
-        <div class="d-flex justify-content-between align-items-center pt-2 border-top text-muted small mt-auto">
-          <span><i class="bi bi-person me-1"></i>{{ p.penulis.nama if p.penulis else 'Staf' }}</span>
+        <!-- Title -->
+        <h5 class="fw-bold mb-2" style="font-size:0.95rem; line-height:1.35; color:var(--coffee-900);">
+          <a href="{{ url_for('pengetahuan.detail', pid=p.id) }}"
+             class="stretched-link text-decoration-none"
+             style="color:inherit;">
+            {{ p.judul }}
+          </a>
+        </h5>
+
+        <!-- Preview text -->
+        <p class="text-muted mb-3" style="font-size:0.82rem; line-height:1.55; flex:1;">
+          {{ p.deskripsi[:140] }}{% if p.deskripsi|length > 140 %}...{% endif %}
+        </p>
+
+        <!-- Footer meta -->
+        <div class="d-flex justify-content-between align-items-center pt-2 border-top"
+             style="font-size:0.76rem; color:var(--text-muted);">
+          <span class="d-flex align-items-center gap-1">
+            <i class="bi bi-person"></i>
+            {{ p.penulis.nama if p.penulis else 'Staf' }}
+          </span>
           {% if p.lampiran %}
-            <span title="Terdapat lampiran media" class="text-secondary"><i class="bi bi-paperclip"></i> Media</span>
+          <span class="d-flex align-items-center gap-1">
+            <i class="bi bi-paperclip"></i> Media
+          </span>
           {% endif %}
         </div>
       </div>
@@ -93,15 +117,20 @@
   </div>
 {% else %}
   <div class="col-12">
-    <div class="card p-5 text-center shadow-sm">
-      <div class="text-muted fs-1 mb-2">📖</div>
-      <h5 class="fw-bold">Tidak ada pengetahuan ditemukan</h5>
-      <p class="text-muted small">Coba ubah filter kategori atau kata kunci pencarian Anda.</p>
-      <div class="mt-2">
-        <a href="{{ url_for('pengetahuan.daftar') }}" class="btn btn-sm btn-outline-secondary">Reset Pencarian</a>
+    <div class="card">
+      <div class="empty-state">
+        <div class="empty-state-icon">
+          <i class="bi bi-journal-x"></i>
+        </div>
+        <h5>Tidak ada pengetahuan ditemukan</h5>
+        <p>Coba ubah kata kunci atau pilih kategori yang berbeda.</p>
+        <a href="{{ url_for('pengetahuan.daftar') }}" class="btn btn-outline-dark btn-sm">
+          <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Pencarian
+        </a>
       </div>
     </div>
   </div>
 {% endfor %}
 </div>
+
 {% endblock %}

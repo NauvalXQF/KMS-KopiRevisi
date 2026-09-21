@@ -1,15 +1,30 @@
 {% extends "base.html" %}
 {% block title %}{{ p.judul }}{% endblock %}
 {% block content %}
+
 <div class="row justify-content-center">
   <div class="col-lg-10">
-    <div class="mb-3 d-flex justify-content-between align-items-center">
+
+    <!-- ── Breadcrumb Navigation ── -->
+    <nav aria-label="breadcrumb" class="mb-3">
+      <ol class="breadcrumb mb-0" style="font-size: 0.82rem;">
+        <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}" class="text-muted"><i class="bi bi-house me-1"></i>Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('pengetahuan.daftar') }}" class="text-muted">Pustaka Pengetahuan</a></li>
+        <li class="breadcrumb-item active text-truncate" style="max-width: 350px;" aria-current="page">{{ p.judul }}</li>
+      </ol>
+    </nav>
+
+    <!-- Top Action Bar -->
+    <div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
       <a href="{{ url_for('pengetahuan.daftar') }}" class="btn btn-sm btn-outline-secondary">
         <i class="bi bi-arrow-left"></i> Kembali ke Pustaka
       </a>
       <div class="d-flex gap-2">
+        <button onclick="window.print()" class="btn btn-sm btn-outline-secondary" title="Cetak SOP / Simpan PDF">
+          <i class="bi bi-printer me-1"></i> Cetak Dokumen
+        </button>
         <a href="{{ url_for('pengetahuan.edit', pid=p.id) }}" class="btn btn-sm btn-outline-dark">
-          <i class="bi bi-pencil-square"></i> Edit / Revisi
+          <i class="bi bi-pencil-square me-1"></i> Edit / Revisi
         </a>
         <form method="post" action="{{ url_for('pengetahuan.hapus', pid=p.id) }}" onsubmit="return confirm('Yakin ingin menghapus pengetahuan ini?')">
           <button class="btn btn-sm btn-outline-danger">
@@ -33,10 +48,12 @@
           {% else %}
             <span class="badge badge-soft-warning"><i class="bi bi-clock me-1"></i>{{ p.status }}</span>
           {% endif %}
-          <span class="badge bg-light text-muted border">Versi {{ p.versi }}</span>
+          <span class="badge badge-soft-neutral">Versi {{ p.versi }}</span>
         </div>
 
-        <h1 class="fw-bold mb-3" style="font-size: 2rem;">{{ p.judul }}</h1>
+        <h1 class="fw-bold mb-3" style="font-size: 2rem; color:var(--coffee-900); letter-spacing:-0.03em;">
+          {{ p.judul }}
+        </h1>
 
         <div class="d-flex align-items-center gap-3 text-muted small pb-3 mb-4 border-bottom">
           <span><i class="bi bi-person-circle me-1"></i> Ditulis oleh: <b>{{ p.penulis.nama if p.penulis else 'Staf' }}</b></span>
@@ -54,7 +71,7 @@
         </div>
         {% endif %}
 
-        <div class="article-content fs-6 mb-4" style="white-space: pre-line; line-height: 1.75; color: #2B2523;">
+        <div class="article-content fs-6 mb-4" style="white-space: pre-line; line-height: 1.8; color: var(--text-primary);">
 {{ p.deskripsi }}
         </div>
 
@@ -92,13 +109,13 @@
     <div class="card shadow-sm mb-4">
       <div class="card-header d-flex align-items-center justify-content-between">
         <span class="fw-bold"><i class="bi bi-clock-history me-1"></i> Riwayat Versi & Log Perubahan</span>
-        <span class="badge bg-light text-dark border">{{ riwayat|length }} Riwayat</span>
+        <span class="badge badge-soft-neutral">{{ riwayat|length }} Riwayat</span>
       </div>
       <ul class="list-group list-group-flush">
         {% for v in riwayat %}
         <li class="list-group-item d-flex justify-content-between align-items-center py-3">
           <div>
-            <span class="badge bg-light text-dark border me-2">v{{ v.versi }}</span>
+            <span class="badge badge-soft-neutral me-2">v{{ v.versi }}</span>
             <span class="fw-semibold">{{ v.judul }}</span>
           </div>
           <span class="text-muted small"><i class="bi bi-calendar3 me-1"></i>{{ v.created_at }}</span>

@@ -1,62 +1,130 @@
 {% extends "base.html" %}
 {% block title %}Masuk{% endblock %}
 {% block content %}
-<div class="row justify-content-center align-items-center py-4 py-md-5">
-  <div class="col-md-5 col-lg-4">
-    <div class="card shadow-sm border-0 p-3 p-md-4">
-      <div class="card-body">
-        <div class="text-center mb-4">
-          <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-3" style="width: 64px; height: 64px; background: var(--caramel-100); color: var(--coffee-700); font-size: 2rem;">
-            ☕
-          </div>
-          <h3 class="fw-bold mb-1">KMS Kopi</h3>
-          <p class="text-muted small">Knowledge Management System Kedai Kopi</p>
+
+<div class="login-page row g-0 mx-n3 mt-n4" style="min-height: calc(100vh - 58px); margin-top: -1.75rem !important;">
+
+  <!-- ── Left Panel: Brand / Info ── -->
+  <div class="col-lg-6 login-panel-left d-none d-lg-flex">
+    <div style="position: relative; z-index: 1; max-width: 420px;">
+      <!-- Logo -->
+      <div class="d-flex align-items-center gap-2 mb-4">
+        <div style="width:44px; height:44px; border-radius:12px; background: rgba(200,141,88,0.15); display:flex; align-items:center; justify-content:center;">
+          <i class="bi bi-cup-hot-fill" style="font-size:1.4rem; color:var(--caramel-400);"></i>
         </div>
-
-        <form method="post" id="loginForm">
-          <div class="mb-3">
-            <label class="form-label">Nama Pengguna (opsional)</label>
-            <div class="input-group">
-              <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-person"></i></span>
-              <input name="nama" id="inputNama" class="form-control border-start-0 ps-0" placeholder="cth: Pemilik / Barista">
-            </div>
-          </div>
-          <div class="mb-4">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-              <label class="form-label mb-0">PIN Akses</label>
-              <span class="text-muted" style="font-size: 0.75rem;">4 Digit Angka</span>
-            </div>
-            <div class="input-group">
-              <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-key"></i></span>
-              <input name="pin" id="inputPin" type="password" inputmode="numeric" maxlength="6" class="form-control border-start-0 ps-0 form-control-lg fw-bold" placeholder="••••" required autofocus style="letter-spacing: 0.25em;">
-            </div>
-          </div>
-          <button type="submit" class="btn btn-dark w-100 btn-lg shadow-sm mb-3">
-            <span>Masuk ke Sistem</span>
-            <i class="bi bi-arrow-right ms-1"></i>
-          </button>
-        </form>
-
-        <div class="border-top pt-3 mt-2">
-          <p class="text-muted small text-center mb-2">Akun Demo Cepat:</p>
-          <div class="d-flex gap-2">
-            <button type="button" class="btn btn-sm btn-outline-secondary w-50" onclick="isiDemo('Pemilik', '1111')">
-              <i class="bi bi-shield-lock me-1"></i> Pemilik (1111)
-            </button>
-            <button type="button" class="btn btn-sm btn-outline-secondary w-50" onclick="isiDemo('Karyawan', '2222')">
-              <i class="bi bi-cup-hot me-1"></i> Barista (2222)
-            </button>
-          </div>
+        <div>
+          <div style="color:#fff; font-weight:800; font-size:1.1rem; letter-spacing:-0.02em;">KMS Kopi</div>
+          <div style="color:rgba(255,255,255,0.45); font-size:0.72rem; font-weight:600; text-transform:uppercase; letter-spacing:0.08em;">Knowledge Management System</div>
         </div>
       </div>
+
+      <!-- Tagline -->
+      <h2 style="color:#fff; font-size:2rem; font-weight:800; letter-spacing:-0.03em; line-height:1.2; margin-bottom:0.75rem;">
+        Satu platform<br>untuk semua<br>
+        <span style="color:var(--caramel-400);">pengetahuan kedai.</span>
+      </h2>
+      <p style="color:rgba(255,255,255,0.55); font-size:0.9rem; margin-bottom:2rem; line-height:1.65;">
+        Simpan resep standar, SOP buka-tutup, data supplier, hingga komplain pelanggan — semua tersentralisasi dan mudah dicari oleh seluruh tim.
+      </p>
+
+      <!-- Feature list -->
+      <div>
+        <div class="login-feature-item">
+          <i class="bi bi-journal-check"></i>
+          <span>Pustaka resep &amp; SOP dengan alur validasi pemilik</span>
+        </div>
+        <div class="login-feature-item">
+          <i class="bi bi-box-seam"></i>
+          <span>Pantau stok bahan dan peringatan menipis</span>
+        </div>
+        <div class="login-feature-item">
+          <i class="bi bi-graph-up-arrow"></i>
+          <span>Analisis penjualan, jam ramai, dan menu terlaris</span>
+        </div>
+        <div class="login-feature-item">
+          <i class="bi bi-shield-lock"></i>
+          <span>Akses aman berbasis PIN per peran pengguna</span>
+        </div>
+      </div>
+
+      <!-- Bottom note -->
+      <div style="margin-top:3rem; padding-top:1.5rem; border-top: 1px solid rgba(255,255,255,0.08);">
+        <p style="color:rgba(255,255,255,0.3); font-size:0.75rem; margin:0;">
+          Prototipe Akademik &mdash; Tugas Kelompok SI 2026<br>
+          Departemen Informatika, Universitas Diponegoro
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Right Panel: Login Form ── -->
+  <div class="col-12 col-lg-6 login-panel-right">
+    <div style="max-width: 360px; margin: 0 auto; width: 100%;">
+
+      <!-- Mobile brand (only shown on small screens) -->
+      <div class="d-flex d-lg-none align-items-center gap-2 mb-4">
+        <i class="bi bi-cup-hot-fill" style="font-size:1.5rem; color:var(--caramel-500);"></i>
+        <span style="font-weight:800; font-size:1.2rem; color:var(--coffee-900);">KMS Kopi</span>
+      </div>
+
+      <h3 style="font-size:1.5rem; font-weight:800; color:var(--coffee-900); letter-spacing:-0.02em; margin-bottom:0.3rem;">
+        Selamat datang kembali
+      </h3>
+      <p style="color:var(--text-muted); font-size:0.875rem; margin-bottom:2rem;">
+        Masuk menggunakan PIN yang terdaftar.
+      </p>
+
+      <form method="post" id="loginForm" novalidate>
+        <div class="mb-3">
+          <label class="form-label">Nama Pengguna <span style="color:var(--text-light); font-weight:400;">(Opsional)</span></label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-person"></i></span>
+            <input name="nama" id="inputNama" class="form-control border-start-0" placeholder="cth: Pemilik, Budi...">
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <div class="d-flex justify-content-between mb-1">
+            <label class="form-label mb-0">PIN Akses</label>
+            <span style="font-size:0.75rem; color:var(--text-light);">4–6 digit angka</span>
+          </div>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-key"></i></span>
+            <input name="pin" id="inputPin" type="password" inputmode="numeric"
+                   maxlength="6" class="form-control border-start-0 fw-bold"
+                   style="letter-spacing:0.3em; font-size:1.1rem;"
+                   placeholder="••••" required autofocus>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-dark w-100 btn-lg">
+          Masuk ke Sistem <i class="bi bi-arrow-right ms-1"></i>
+        </button>
+      </form>
+
+      <!-- Demo shortcut -->
+      <div class="divider-text mt-4">Demo Cepat</div>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-outline-dark w-50 btn-sm" onclick="demoLogin('Pemilik','1111')">
+          <i class="bi bi-shield-lock me-1"></i> Pemilik (1111)
+        </button>
+        <button type="button" class="btn btn-outline-dark w-50 btn-sm" onclick="demoLogin('Barista','2222')">
+          <i class="bi bi-cup-hot me-1"></i> Barista (2222)
+        </button>
+      </div>
+
+      <p style="font-size:0.72rem; color:var(--text-light); text-align:center; margin-top:1.25rem;">
+        Akun demo hanya untuk keperluan presentasi/evaluasi.
+      </p>
     </div>
   </div>
 </div>
 
 <script>
-function isiDemo(nama, pin) {
+function demoLogin(nama, pin) {
   document.getElementById('inputNama').value = nama;
-  document.getElementById('inputPin').value = pin;
+  document.getElementById('inputPin').value  = pin;
+  document.getElementById('loginForm').submit();
 }
 </script>
 {% endblock %}

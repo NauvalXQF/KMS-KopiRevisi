@@ -3,9 +3,19 @@
 {% block content %}
 <div class="row justify-content-center">
   <div class="col-lg-8">
+
+    <!-- ── Breadcrumb Navigation ── -->
+    <nav aria-label="breadcrumb" class="mb-3">
+      <ol class="breadcrumb mb-0" style="font-size: 0.82rem;">
+        <li class="breadcrumb-item"><a href="{{ url_for('dashboard.index') }}" class="text-muted"><i class="bi bi-house me-1"></i>Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('pengetahuan.daftar') }}" class="text-muted">Pustaka Pengetahuan</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{% if p %}Edit Pengetahuan{% else %}Tulis Baru{% endif %}</li>
+      </ol>
+    </nav>
+
     <div class="mb-3">
       <a href="{{ url_for('pengetahuan.daftar') }}" class="btn btn-sm btn-outline-secondary">
-        <i class="bi bi-arrow-left"></i> Kembali
+        <i class="bi bi-arrow-left"></i> Kembali ke Pustaka
       </a>
     </div>
 

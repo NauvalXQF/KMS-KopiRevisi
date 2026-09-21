@@ -4,119 +4,143 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{% block title %}KMS Kopi{% endblock %} — KMS Kopi Revisi</title>
-  <!-- Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <!-- Bootstrap 5.3 & Bootstrap Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <!-- Custom Modern Minimalist Coffee Theme -->
   <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
 </head>
 <body>
+
+<!-- ── Tier 1: Primary Navbar ── -->
 <nav class="navbar navbar-expand-lg navbar-coffee sticky-top">
   <div class="container">
     <a class="navbar-brand" href="{{ url_for('dashboard.index') }}">
-      <span>☕</span>
+      <i class="bi bi-cup-hot-fill" style="color: var(--caramel-400);"></i>
       <span>KMS Kopi</span>
-      <span class="badge-brand">Revisi</span>
+      <span class="brand-pill">Revisi</span>
     </a>
-    <button class="navbar-toggler border-0 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Toggle navigation">
-      <i class="bi bi-list fs-3"></i>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Toggle">
+      <i class="bi bi-list" style="color:#fff; font-size:1.2rem;"></i>
     </button>
+
     <div class="collapse navbar-collapse" id="nav">
       {% if current_user %}
-      <ul class="navbar-nav me-auto ps-lg-3 gap-1">
+      <!-- Left side: core navigation only -->
+      <ul class="navbar-nav me-auto ps-lg-2 gap-1">
         <li class="nav-item">
-          <a class="nav-link {% if request.endpoint == 'dashboard.index' %}active{% endif %}" href="{{ url_for('dashboard.index') }}">
+          <a class="nav-link {% if request.endpoint == 'dashboard.index' %}active{% endif %}"
+             href="{{ url_for('dashboard.index') }}">
             <i class="bi bi-grid-1x2"></i> Dashboard
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link {% if request.endpoint and request.endpoint.startswith('pengetahuan.') %}active{% endif %}" href="{{ url_for('pengetahuan.daftar') }}">
+          <a class="nav-link {% if request.endpoint and request.endpoint.startswith('pengetahuan.') %}active{% endif %}"
+             href="{{ url_for('pengetahuan.daftar') }}">
             <i class="bi bi-journal-bookmark"></i> Pengetahuan
           </a>
         </li>
-        {% if current_user.peran == 'pemilik' %}
-        <li class="nav-item">
-          <a class="nav-link {% if request.endpoint and request.endpoint.startswith('validasi.') %}active{% endif %}" href="{{ url_for('validasi.antrean') }}">
-            <i class="bi bi-patch-check"></i> Validasi
-          </a>
-        </li>
-        {% endif %}
-        <li class="nav-item">
-          <a class="nav-link {% if request.endpoint and request.endpoint.startswith('stok.') %}active{% endif %}" href="{{ url_for('stok.daftar') }}">
-            <i class="bi bi-box-seam"></i> Stok
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link {% if request.endpoint and request.endpoint.startswith('supplier.') %}active{% endif %}" href="{{ url_for('supplier.daftar') }}">
-            <i class="bi bi-truck"></i> Supplier
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link {% if request.endpoint and request.endpoint.startswith('penjualan.') %}active{% endif %}" href="{{ url_for('penjualan.daftar') }}">
-            <i class="bi bi-receipt"></i> Penjualan
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link {% if request.endpoint and request.endpoint.startswith('komplain.') %}active{% endif %}" href="{{ url_for('komplain.daftar') }}">
-            <i class="bi bi-chat-square-dots"></i> Komplain
-          </a>
-        </li>
       </ul>
-      <ul class="navbar-nav align-items-lg-center gap-2">
+
+      <!-- Right side: utilities -->
+      <ul class="navbar-nav align-items-lg-center gap-1 ms-auto">
+        <!-- Bell notification -->
         <li class="nav-item">
-          <a class="nav-link position-relative" href="{{ url_for('notifikasi.daftar') }}">
-            <i class="bi bi-bell"></i>
-            <span class="d-lg-none">Notifikasi</span>
+          <a class="nav-link position-relative px-2" href="{{ url_for('notifikasi.daftar') }}" title="Notifikasi">
+            <i class="bi bi-bell" style="font-size:1.05rem;"></i>
             {% if unread_count %}
-            <span class="position-absolute top-1 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem;">
-              {{ unread_count }}
-            </span>
+              <span class="notif-badge">{{ unread_count }}</span>
             {% endif %}
+            <span class="d-lg-none ms-1">Notifikasi</span>
           </a>
         </li>
-        {% if current_user.peran == 'pemilik' %}
-        <li class="nav-item">
-          <a class="nav-link {% if request.endpoint and request.endpoint.startswith('auth.daftar') %}active{% endif %}" href="{{ url_for('auth.daftar') }}">
-            <i class="bi bi-people"></i> Pengguna
-          </a>
-        </li>
-        {% endif %}
-        <li class="nav-item">
+
+        <!-- User pill -->
+        <li class="nav-item d-none d-lg-block">
           <span class="user-profile-pill">
-            <i class="bi bi-person-circle text-white-50"></i>
+            <i class="bi bi-person-circle" style="color:rgba(255,255,255,0.5); font-size:1rem;"></i>
             <span>{{ current_user.nama }}</span>
             <span class="badge-role badge-role-{{ current_user.peran }}">{{ current_user.peran }}</span>
           </span>
         </li>
+
+        <!-- Logout -->
         <li class="nav-item">
-          <a class="nav-link text-white-50 hover-white" href="{{ url_for('auth.logout') }}" title="Keluar">
+          <a href="{{ url_for('auth.logout') }}" class="nav-link btn-logout" title="Keluar">
             <i class="bi bi-box-arrow-right"></i>
             <span class="d-lg-none">Keluar</span>
           </a>
         </li>
       </ul>
+
+      <!-- Mobile user info -->
+      <div class="d-lg-none border-top mt-2 pt-2" style="border-color: rgba(255,255,255,0.1) !important;">
+        <div class="user-profile-pill d-inline-flex mb-1">
+          <i class="bi bi-person-circle" style="color:rgba(255,255,255,0.5);"></i>
+          <span>{{ current_user.nama }}</span>
+          <span class="badge-role badge-role-{{ current_user.peran }}">{{ current_user.peran }}</span>
+        </div>
+      </div>
       {% endif %}
     </div>
   </div>
 </nav>
 
-<main class="container my-4">
+<!-- ── Tier 2: Sub-Navigation (Operational menus) ── -->
+{% if current_user %}
+<nav class="subnav">
+  <div class="container">
+    <div class="subnav-inner">
+      {% if current_user.peran == 'pemilik' %}
+      <a class="nav-link {% if request.endpoint and request.endpoint.startswith('validasi.') %}active{% endif %}"
+         href="{{ url_for('validasi.antrean') }}">
+        <i class="bi bi-patch-check"></i> Validasi
+      </a>
+      {% endif %}
+      <a class="nav-link {% if request.endpoint and request.endpoint.startswith('stok.') %}active{% endif %}"
+         href="{{ url_for('stok.daftar') }}">
+        <i class="bi bi-box-seam"></i> Stok
+      </a>
+      <a class="nav-link {% if request.endpoint and request.endpoint.startswith('supplier.') %}active{% endif %}"
+         href="{{ url_for('supplier.daftar') }}">
+        <i class="bi bi-truck"></i> Supplier
+      </a>
+      <a class="nav-link {% if request.endpoint and request.endpoint.startswith('penjualan.') %}active{% endif %}"
+         href="{{ url_for('penjualan.daftar') }}">
+        <i class="bi bi-receipt"></i> Penjualan
+      </a>
+      <a class="nav-link {% if request.endpoint and request.endpoint.startswith('komplain.') %}active{% endif %}"
+         href="{{ url_for('komplain.daftar') }}">
+        <i class="bi bi-chat-square-dots"></i> Komplain
+      </a>
+      {% if current_user.peran == 'pemilik' %}
+      <a class="nav-link {% if request.endpoint and 'auth' in (request.endpoint or '') and 'daftar' in (request.endpoint or '') %}active{% endif %}"
+         href="{{ url_for('auth.daftar') }}">
+        <i class="bi bi-people"></i> Pengguna
+      </a>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+{% endif %}
+
+<!-- ── Flash messages ── -->
+<main class="container" style="padding-top: 1.75rem; padding-bottom: 2rem;">
   {% with msgs = get_flashed_messages(with_categories=true) %}
     {% for cat, msg in msgs %}
-      <div class="alert alert-{{ 'danger' if cat=='danger' else 'warning' if cat=='warning' else 'success' }} alert-dismissible fade show d-flex align-items-center gap-2 mb-4 shadow-sm" role="alert">
+      <div class="alert alert-{{ 'danger' if cat=='danger' else 'warning' if cat=='warning' else 'success' }} alert-dismissible fade show d-flex align-items-center gap-2 mb-4"
+           role="alert" style="border-left: 4px solid {% if cat=='danger' %}var(--accent-stock){% elif cat=='warning' %}var(--accent-validation){% else %}var(--status-success-text){% endif %};">
         {% if cat == 'danger' %}
-          <i class="bi bi-exclamation-octagon-fill fs-5"></i>
+          <i class="bi bi-exclamation-octagon-fill flex-shrink-0" style="color:var(--status-danger-text);"></i>
         {% elif cat == 'warning' %}
-          <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+          <i class="bi bi-exclamation-triangle-fill flex-shrink-0" style="color:var(--status-warning-text);"></i>
         {% else %}
-          <i class="bi bi-check-circle-fill fs-5"></i>
+          <i class="bi bi-check-circle-fill flex-shrink-0" style="color:var(--status-success-text);"></i>
         {% endif %}
-        <div>{{ msg }}</div>
-        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+        <div class="flex-grow-1">{{ msg }}</div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Tutup"></button>
       </div>
     {% endfor %}
   {% endwith %}
@@ -124,10 +148,18 @@
   {% block content %}{% endblock %}
 </main>
 
-<footer class="py-4 mt-5 text-center text-muted">
-  <div class="container">
-    <p class="mb-1 fw-medium"><span class="me-1">☕</span> <b>KMS Kopi Revisi</b> — Knowledge Management System Kedai Kopi</p>
-    <small class="text-secondary">Tugas Kelompok Sistem Informasi 2026 • Departemen Informatika, Universitas Diponegoro</small>
+<!-- ── Footer ── -->
+<footer class="py-4 mt-4">
+  <div class="container d-flex flex-column flex-md-row align-items-center justify-content-between gap-2">
+    <div class="d-flex align-items-center gap-2 text-muted">
+      <i class="bi bi-cup-hot-fill" style="color: var(--caramel-500);"></i>
+      <span class="fw-semibold" style="color: var(--text-secondary);">KMS Kopi Revisi</span>
+      <span>—</span>
+      <span>Knowledge Management System Kedai Kopi</span>
+    </div>
+    <small style="color: var(--text-light);">
+      Tugas Kelompok SI 2026 &middot; Informatika, Universitas Diponegoro
+    </small>
   </div>
 </footer>
 

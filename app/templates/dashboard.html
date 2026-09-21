@@ -1,124 +1,147 @@
 {% extends "base.html" %}
 {% block title %}Dashboard{% endblock %}
 {% block content %}
-<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center page-header gap-3">
+
+<!-- Page Header -->
+<div class="page-header">
   <div>
-    <h2>Dashboard Operasional & KMS</h2>
-    <p>Ringkasan performa penjualan, pengetahuan kedai, dan peringatan stok.</p>
+    <h2 class="page-title">Dashboard</h2>
+    <p class="page-subtitle">Ringkasan operasional dan pengetahuan kedai kopi hari ini.</p>
   </div>
-  <div class="d-flex gap-2 flex-wrap">
+  <div class="d-flex gap-2">
     <a href="{{ url_for('pengetahuan.baru') }}" class="btn btn-dark btn-sm">
-      <i class="bi bi-plus-lg"></i> Pengetahuan Baru
+      <i class="bi bi-plus-lg"></i> Tambah Pengetahuan
     </a>
-    <a href="{{ url_for('stok.daftar') }}" class="btn btn-outline-dark btn-sm">
-      <i class="bi bi-arrow-down-up"></i> Catat Stok
+    <a href="{{ url_for('penjualan.daftar') }}" class="btn btn-outline-dark btn-sm">
+      <i class="bi bi-receipt"></i> Catat Penjualan
     </a>
   </div>
 </div>
 
-<!-- Stat Cards -->
+<!-- ── Stat Cards ── -->
 <div class="row g-3 mb-4">
+
+  <!-- Pengetahuan Terbit -->
   <div class="col-6 col-lg-3">
-    <div class="card stat-card h-100">
-      <div class="card-body d-flex flex-column justify-content-between">
-        <div class="d-flex justify-content-between align-items-start mb-2">
+    <div class="card stat-card stat-card-knowledge h-100">
+      <div class="card-body d-flex flex-column">
+        <div class="d-flex justify-content-between align-items-start mb-3">
           <span class="stat-label">Pengetahuan Terbit</span>
-          <div class="stat-icon">
+          <div class="stat-icon stat-icon-knowledge">
             <i class="bi bi-journal-check"></i>
           </div>
         </div>
-        <div>
-          <div class="stat-num">{{ total_pengetahuan }}</div>
-          <div class="small mt-2"><a href="{{ url_for('pengetahuan.daftar') }}" class="text-decoration-none">Buka Pustaka <i class="bi bi-arrow-right"></i></a></div>
-        </div>
+        <div class="stat-num mt-auto">{{ total_pengetahuan }}</div>
+        <a href="{{ url_for('pengetahuan.daftar') }}" class="stat-link mt-1">
+          Buka pustaka <i class="bi bi-arrow-right"></i>
+        </a>
       </div>
     </div>
   </div>
 
+  <!-- Antrean Validasi -->
   <div class="col-6 col-lg-3">
-    <div class="card stat-card h-100">
-      <div class="card-body d-flex flex-column justify-content-between">
-        <div class="d-flex justify-content-between align-items-start mb-2">
+    <div class="card stat-card stat-card-validation h-100">
+      <div class="card-body d-flex flex-column">
+        <div class="d-flex justify-content-between align-items-start mb-3">
           <span class="stat-label">Antrean Validasi</span>
-          <div class="stat-icon" style="background: var(--status-warning-bg); color: var(--status-warning-text);">
+          <div class="stat-icon stat-icon-validation">
             <i class="bi bi-hourglass-split"></i>
           </div>
         </div>
-        <div>
-          <div class="stat-num">{{ antrean }}</div>
-          <div class="small mt-2">
-            {% if current_user.peran == 'pemilik' %}
-              <a href="{{ url_for('validasi.antrean') }}" class="text-decoration-none">Perlu review <i class="bi bi-arrow-right"></i></a>
-            {% else %}
-              <span class="text-muted">Menunggu pemilik</span>
-            {% endif %}
-          </div>
-        </div>
+        <div class="stat-num mt-auto">{{ antrean }}</div>
+        {% if current_user.peran == 'pemilik' %}
+          <a href="{{ url_for('validasi.antrean') }}" class="stat-link mt-1">
+            Tinjau sekarang <i class="bi bi-arrow-right"></i>
+          </a>
+        {% else %}
+          <span class="stat-link mt-1" style="cursor:default;">Menunggu pemilik</span>
+        {% endif %}
       </div>
     </div>
   </div>
 
+  <!-- Bahan Menipis -->
   <div class="col-6 col-lg-3">
-    <div class="card stat-card h-100">
-      <div class="card-body d-flex flex-column justify-content-between">
-        <div class="d-flex justify-content-between align-items-start mb-2">
+    <div class="card stat-card stat-card-stock h-100">
+      <div class="card-body d-flex flex-column">
+        <div class="d-flex justify-content-between align-items-start mb-3">
           <span class="stat-label">Bahan Menipis</span>
-          <div class="stat-icon" style="background: var(--status-danger-bg); color: var(--status-danger-text);">
+          <div class="stat-icon stat-icon-stock">
             <i class="bi bi-exclamation-triangle"></i>
           </div>
         </div>
-        <div>
-          <div class="stat-num text-danger">{{ menipis|length }}</div>
-          <div class="small mt-2"><a href="{{ url_for('stok.daftar') }}" class="text-danger text-decoration-none">Cek stok bahan <i class="bi bi-arrow-right"></i></a></div>
+        <div class="stat-num mt-auto {% if menipis %}text-danger{% endif %}">
+          {{ menipis|length }}
         </div>
+        <a href="{{ url_for('stok.daftar') }}" class="stat-link mt-1 {% if menipis %}text-danger{% endif %}">
+          Cek stok bahan <i class="bi bi-arrow-right"></i>
+        </a>
       </div>
     </div>
   </div>
 
+  <!-- Komplain Baru -->
   <div class="col-6 col-lg-3">
-    <div class="card stat-card h-100">
-      <div class="card-body d-flex flex-column justify-content-between">
-        <div class="d-flex justify-content-between align-items-start mb-2">
+    <div class="card stat-card stat-card-complaint h-100">
+      <div class="card-body d-flex flex-column">
+        <div class="d-flex justify-content-between align-items-start mb-3">
           <span class="stat-label">Komplain Baru</span>
-          <div class="stat-icon" style="background: var(--status-info-bg); color: var(--status-info-text);">
+          <div class="stat-icon stat-icon-complaint">
             <i class="bi bi-chat-left-dots"></i>
           </div>
         </div>
-        <div>
-          <div class="stat-num">{{ komplain_baru }}</div>
-          <div class="small mt-2"><a href="{{ url_for('komplain.daftar') }}" class="text-decoration-none">Lihat komplain <i class="bi bi-arrow-right"></i></a></div>
-        </div>
+        <div class="stat-num mt-auto">{{ komplain_baru }}</div>
+        <a href="{{ url_for('komplain.daftar') }}" class="stat-link mt-1">
+          Lihat laporan <i class="bi bi-arrow-right"></i>
+        </a>
       </div>
     </div>
   </div>
 </div>
 
-<!-- Detailed Widgets -->
+<!-- ── Detail Widgets with Visual Progress Bars ── -->
 <div class="row g-3">
+
   <!-- Menu Terlaris -->
   <div class="col-md-4">
     <div class="card h-100 shadow-sm">
       <div class="card-header d-flex align-items-center justify-content-between">
-        <span><i class="bi bi-trophy-fill text-warning me-2"></i> Menu Terlaris</span>
-        <span class="badge badge-soft-caramel">Favorit</span>
+        <span class="d-flex align-items-center gap-2">
+          <i class="bi bi-trophy-fill" style="color:var(--caramel-500);"></i>
+          Menu Terlaris
+        </span>
+        <span class="badge badge-soft-caramel">Top 5</span>
       </div>
-      <div class="card-body p-0">
-        <ul class="list-group list-group-flush">
-          {% for m in menu_laris %}
-          <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+      <ul class="list-group list-group-flush">
+        {% set max_menu = menu_laris[0].total if menu_laris else 1 %}
+        {% for m in menu_laris %}
+        {% set pct = ((m.total / max_menu) * 100)|round|int %}
+        <li class="list-group-item py-3">
+          <div class="d-flex align-items-center justify-content-between mb-2">
             <div class="d-flex align-items-center gap-2">
-              <span class="badge rounded-circle bg-light text-dark fw-bold" style="width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center;">
+              <span class="avatar-initials" style="width: 24px; height: 24px; font-size:0.72rem; font-weight:800; color:var(--caramel-600); background:var(--caramel-100); border-color:var(--caramel-200);">
                 {{ loop.index }}
               </span>
-              <span class="fw-semibold">{{ m.nama_menu }}</span>
+              <span class="fw-medium" style="font-size:0.875rem;">{{ m.nama_menu }}</span>
             </div>
-            <span class="badge bg-light text-dark border fw-bold px-2 py-1">{{ m.total }} cup</span>
-          </li>
-          {% else %}
-          <li class="list-group-item text-muted text-center py-4">Belum ada riwayat penjualan.</li>
-          {% endfor %}
-        </ul>
-      </div>
+            <span class="badge badge-soft-neutral">{{ m.total }} cup</span>
+          </div>
+          <div class="progress" style="height: 5px; background: var(--bg-surface-3); border-radius: var(--radius-pill);">
+            <div class="progress-bar" role="progressbar" style="width: {{ pct }}%; background: linear-gradient(90deg, var(--caramel-400), var(--caramel-500)); border-radius: var(--radius-pill);"></div>
+          </div>
+        </li>
+        {% else %}
+        <li class="list-group-item">
+          <div class="empty-state py-3">
+            <div class="empty-state-icon" style="width:44px;height:44px;font-size:1.2rem;margin:0 auto 0.6rem;">
+              <i class="bi bi-cup"></i>
+            </div>
+            <p class="mb-0" style="font-size:0.82rem;">Belum ada riwayat penjualan.</p>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
 
@@ -126,24 +149,41 @@
   <div class="col-md-4">
     <div class="card h-100 shadow-sm">
       <div class="card-header d-flex align-items-center justify-content-between">
-        <span><i class="bi bi-clock-history text-primary me-2"></i> Jam Ramai Kedai</span>
+        <span class="d-flex align-items-center gap-2">
+          <i class="bi bi-clock-history" style="color:var(--status-info-text);"></i>
+          Jam Ramai Kedai
+        </span>
         <span class="badge badge-soft-info">Peak Hours</span>
       </div>
-      <div class="card-body p-0">
-        <ul class="list-group list-group-flush">
-          {% for j in jam_ramai %}
-          <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+      <ul class="list-group list-group-flush">
+        {% set max_jam = jam_ramai[0].total if jam_ramai else 1 %}
+        {% for j in jam_ramai %}
+        {% set pct_j = ((j.total / max_jam) * 100)|round|int %}
+        <li class="list-group-item py-3">
+          <div class="d-flex align-items-center justify-content-between mb-2">
             <div class="d-flex align-items-center gap-2">
-              <i class="bi bi-sun text-warning"></i>
-              <span class="fw-medium">Pukul {{ "%02d"|format(j.jam|int) }}:00 - {{ "%02d"|format((j.jam|int) + 1) }}:00</span>
+              <i class="bi bi-sun" style="color:var(--caramel-500); font-size:0.95rem;"></i>
+              <span class="fw-medium" style="font-size:0.875rem;">
+                {{ "%02d"|format(j.jam|int) }}:00 &mdash; {{ "%02d"|format((j.jam|int)+1) }}:00
+              </span>
             </div>
-            <span class="badge bg-light text-dark border fw-bold">{{ j.total }} cup</span>
-          </li>
-          {% else %}
-          <li class="list-group-item text-muted text-center py-4">Belum ada data jam ramai.</li>
-          {% endfor %}
-        </ul>
-      </div>
+            <span class="badge badge-soft-neutral">{{ j.total }} cup</span>
+          </div>
+          <div class="progress" style="height: 5px; background: var(--bg-surface-3); border-radius: var(--radius-pill);">
+            <div class="progress-bar" role="progressbar" style="width: {{ pct_j }}%; background: linear-gradient(90deg, #4A90E2, #1F6FE8); border-radius: var(--radius-pill);"></div>
+          </div>
+        </li>
+        {% else %}
+        <li class="list-group-item">
+          <div class="empty-state py-3">
+            <div class="empty-state-icon" style="width:44px;height:44px;font-size:1.2rem;margin:0 auto 0.6rem;">
+              <i class="bi bi-clock"></i>
+            </div>
+            <p class="mb-0" style="font-size:0.82rem;">Belum ada data jam ramai.</p>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
 
@@ -151,30 +191,47 @@
   <div class="col-md-4">
     <div class="card h-100 shadow-sm">
       <div class="card-header d-flex align-items-center justify-content-between">
-        <span><i class="bi bi-exclamation-triangle-fill text-danger me-2"></i> Peringatan Stok</span>
-        <span class="badge badge-soft-danger">Perlu Restock</span>
+        <span class="d-flex align-items-center gap-2">
+          <i class="bi bi-exclamation-triangle-fill" style="color:var(--accent-stock);"></i>
+          Peringatan Stok
+        </span>
+        {% if menipis %}
+          <span class="badge badge-soft-danger">{{ menipis|length }} Bahan</span>
+        {% else %}
+          <span class="badge badge-soft-success">Semua Aman</span>
+        {% endif %}
       </div>
-      <div class="card-body p-0">
-        <ul class="list-group list-group-flush">
-          {% for s in menipis %}
-          <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+      <ul class="list-group list-group-flush">
+        {% for s in menipis %}
+        {% set min_val = s.stok_minimum if s.stok_minimum and s.stok_minimum > 0 else 1 %}
+        {% set stok_pct = (((s.sisa or 0) / min_val) * 100)|round|int %}
+        <li class="list-group-item py-3">
+          <div class="d-flex align-items-center justify-content-between mb-2">
             <div>
-              <div class="fw-semibold text-danger">{{ s.nama }}</div>
+              <div class="fw-semibold" style="font-size:0.875rem; color:var(--status-danger-text);">{{ s.nama }}</div>
               <small class="text-muted">Min: {{ "%.0f"|format(s.stok_minimum or 0) }} {{ s.satuan }}</small>
             </div>
-            <div class="text-end">
-              <span class="badge badge-soft-danger fw-bold fs-6">{{ "%.0f"|format(s.sisa or 0) }} {{ s.satuan }}</span>
+            <span class="badge badge-soft-danger fw-bold">
+              {{ "%.0f"|format(s.sisa or 0) }} {{ s.satuan }}
+            </span>
+          </div>
+          <div class="progress" style="height: 5px; background: var(--bg-surface-3); border-radius: var(--radius-pill);">
+            <div class="progress-bar bg-danger" role="progressbar" style="width: {{ [stok_pct, 100]|min }}%; border-radius: var(--radius-pill);"></div>
+          </div>
+        </li>
+        {% else %}
+        <li class="list-group-item">
+          <div class="empty-state py-3">
+            <div class="empty-state-icon" style="width:44px;height:44px;font-size:1.3rem;margin:0 auto 0.6rem; background:var(--status-success-bg); color:var(--status-success-text);">
+              <i class="bi bi-shield-check"></i>
             </div>
-          </li>
-          {% else %}
-          <li class="list-group-item text-center py-4">
-            <i class="bi bi-shield-check text-success fs-1 d-block mb-1"></i>
-            <span class="text-success fw-medium">Semua stok bahan aman!</span>
-          </li>
-          {% endfor %}
-        </ul>
-      </div>
+            <p class="mb-0" style="font-size:0.82rem; color:var(--status-success-text); font-weight:600;">Semua stok bahan aman</p>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
     </div>
   </div>
 </div>
+
 {% endblock %}
