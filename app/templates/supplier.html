@@ -1,35 +1,131 @@
 {% extends "base.html" %}
-{% block title %}Supplier{% endblock %}
+{% block title %}Supplier & Bahan{% endblock %}
 {% block content %}
-<h2 class="fw-bold mb-3">Supplier & Bahan</h2>
-<div class="row g-3">
-<div class="col-md-6">
-{% for s in suppliers %}
-<div class="card mb-2"><div class="card-body">
-  <h5 class="fw-bold mb-0">{{ s.nama }} <span class="badge bg-warning text-dark">★ {{ s.rating }}</span></h5>
-  <div class="text-muted small">{{ s.kontak }} • {{ s.alamat }}</div>
-  <ul class="small mt-2 mb-0">
-  {% for r in relasi if r.supplier_id==s.id %}<li>{{ r.bahan.nama }} — Rp {{ r.harga_terakhir }}</li>{% endfor %}
-  </ul>
-</div></div>
-{% endfor %}
+<div class="page-header">
+  <h2>Supplier & Relasi Bahan</h2>
+  <p>Daftar pemasok bahan baku kedai, kontak darurat, rating kualitas, dan riwayat harga terakhir.</p>
 </div>
-<div class="col-md-6">
-<div class="card card-body mb-3"><h5 class="fw-bold">Supplier baru</h5>
-<form method="post" action="{{ url_for('supplier.tambah') }}">
-  <input name="nama" class="form-control mb-2" placeholder="Nama supplier" required>
-  <input name="kontak" class="form-control mb-2" placeholder="Kontak">
-  <input name="alamat" class="form-control mb-2" placeholder="Alamat">
-  <input name="rating" type="number" min="0" max="5" class="form-control mb-2" placeholder="Rating 0-5" value="0">
-  <button class="btn btn-dark w-100">Tambah</button>
-</form></div>
-<div class="card card-body"><h5 class="fw-bold">Hubungkan bahan + harga</h5>
-<form method="post" action="{{ url_for('supplier.hubungkan') }}">
-  <select name="supplier_id" class="form-select mb-2">{% for s in suppliers %}<option value="{{ s.id }}">{{ s.nama }}</option>{% endfor %}</select>
-  <select name="bahan_id" class="form-select mb-2">{% for b in bahans %}<option value="{{ b.id }}">{{ b.nama }}</option>{% endfor %}</select>
-  <input name="harga_terakhir" type="number" step="any" class="form-control mb-2" placeholder="Harga terakhir" required>
-  <button class="btn btn-outline-dark w-100">Simpan</button>
-</form></div>
-</div>
+
+<div class="row g-4">
+  <!-- Daftar Supplier Cards -->
+  <div class="col-lg-6">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 class="fw-bold text-muted text-uppercase small mb-0">Daftar Rekanan Supplier</h6>
+      <span class="badge bg-light text-dark border">{{ suppliers|length }} Terdaftar</span>
+    </div>
+
+    {% for s in suppliers %}
+    <div class="card shadow-sm mb-3">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div>
+            <h5 class="fw-bold mb-1 text-dark">{{ s.nama }}</h5>
+            <div class="text-muted small">
+              {% if s.kontak %}
+                <span><i class="bi bi-telephone me-1"></i>{{ s.kontak }}</span>
+              {% endif %}
+              {% if s.alamat %}
+                <span class="ms-2"><i class="bi bi-geo-alt me-1"></i>{{ s.alamat }}</span>
+              {% endif %}
+            </div>
+          </div>
+          <span class="badge badge-soft-warning fs-6">
+            <i class="bi bi-star-fill text-warning me-1"></i>{{ s.rating }} / 5
+          </span>
+        </div>
+
+        <div class="mt-3 pt-2 border-top">
+          <small class="text-muted fw-semibold d-block mb-1"><i class="bi bi-box-seam me-1"></i> Bahan yang Disuplai:</small>
+          <div class="d-flex flex-wrap gap-1">
+            {% set has_rel = false %}
+            {% for r in relasi if r.supplier_id==s.id %}
+              {% set has_rel = true %}
+              <span class="badge bg-light text-dark border py-1 px-2">
+                {{ r.bahan.nama }} — <b class="text-success">Rp {{ "{:,.0f}".format(r.harga_terakhir) }}</b>
+              </span>
+            {% endfor %}
+            {% if not has_rel %}
+              <span class="text-muted small fst-italic">Belum ada bahan dihubungkan.</span>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <div class="card p-4 text-center text-muted">Belum ada supplier yang ditambahkan.</div>
+    {% endfor %}
+  </div>
+
+  <!-- Form Tambah & Hubungkan -->
+  <div class="col-lg-6">
+    <!-- Supplier Baru -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-header">
+        <i class="bi bi-building-add me-2 text-primary"></i> Tambah Supplier Baru
+      </div>
+      <div class="card-body">
+        <form method="post" action="{{ url_for('supplier.tambah') }}">
+          <div class="mb-3">
+            <label class="form-label">Nama Supplier / Vendor</label>
+            <input name="nama" class="form-control" placeholder="cth: Roastery Kopi Nusantara" required>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label">Nomor Kontak / WhatsApp</label>
+              <input name="kontak" class="form-control" placeholder="08xxxxxxxx">
+            </div>
+            <div class="col-6">
+              <label class="form-label">Rating Vendor (0 - 5)</label>
+              <input name="rating" type="number" min="0" max="5" class="form-control" placeholder="5" value="5">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Alamat / Lokasi Gudang</label>
+            <input name="alamat" class="form-control" placeholder="cth: Semarang Barat">
+          </div>
+          <button class="btn btn-dark w-100">
+            <i class="bi bi-plus-lg me-1"></i> Simpan Supplier Baru
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Hubungkan Bahan + Harga -->
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <i class="bi bi-link-45deg me-2 text-secondary"></i> Hubungkan Bahan & Harga Pembelian
+      </div>
+      <div class="card-body">
+        <form method="post" action="{{ url_for('supplier.hubungkan') }}">
+          <div class="mb-3">
+            <label class="form-label">Pilih Supplier</label>
+            <select name="supplier_id" class="form-select">
+              {% for s in suppliers %}
+              <option value="{{ s.id }}">{{ s.nama }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Pilih Bahan</label>
+            <select name="bahan_id" class="form-select">
+              {% for b in bahans %}
+              <option value="{{ b.id }}">{{ b.nama }} ({{ b.satuan }})</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Harga Beli Terakhir (Rp)</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light">Rp</span>
+              <input name="harga_terakhir" type="number" step="any" class="form-control" placeholder="cth: 120000" required>
+            </div>
+          </div>
+          <button class="btn btn-outline-dark w-100">
+            <i class="bi bi-check2-circle me-1"></i> Simpan Relasi Bahan
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

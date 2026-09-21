@@ -1,39 +1,162 @@
 {% extends "base.html" %}
-{% block title %}Stok{% endblock %}
+{% block title %}Stok Bahan{% endblock %}
 {% block content %}
-<h2 class="fw-bold mb-3">Stok Bahan</h2>
-<div class="row g-3">
-<div class="col-md-7">
-<div class="card"><div class="card-header fw-bold">Ringkasan</div>
-<table class="table table-sm mb-0"><thead><tr><th>Bahan</th><th>Sisa</th><th>Min.</th><th>Status</th></tr></thead><tbody>
-{% for b, sisa in ringkasan %}
-<tr><td>{{ b.nama }}<div class="text-muted small">{{ b.cara_penyimpanan[:60] if b.cara_penyimpanan else '' }}</div></td>
-<td>{{ "%.0f"|format(sisa or 0) }} {{ b.satuan }}</td><td>{{ "%.0f"|format(b.stok_minimum or 0) }}</td>
-<td>{% if (sisa or 0) <= (b.stok_minimum or 0) %}<span class="badge bg-danger">Menipis</span>{% else %}<span class="badge bg-success">Aman</span>{% endif %}</td></tr>
-{% endfor %}
-</tbody></table></div>
-<div class="card mt-3"><div class="card-header fw-bold">Mutasi terakhir</div>
-<ul class="list-group list-group-flush">
-{% for m in mutasi %}<li class="list-group-item d-flex justify-content-between"><span><span class="badge bg-{{ 'primary' if m.tipe=='masuk' else 'secondary' }}">{{ m.tipe }}</span> {{ m.bahan.nama }} — {{ "%.0f"|format(m.jumlah) }}</span><span class="text-muted small">{{ m.tanggal }}</span></li>
-{% endfor %}
-</ul></div>
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center page-header gap-3">
+  <div>
+    <h2>Manajemen Stok Bahan Kedai</h2>
+    <p>Pantau ketersediaan biji kopi, susu, sirup, dan catat mutasi keluar/masuk harian.</p>
+  </div>
 </div>
-<div class="col-md-5">
-<div class="card card-body mb-3"><h5 class="fw-bold">Catat masuk/keluar</h5>
-<form method="post" action="{{ url_for('stok.catat') }}">
-  <select name="bahan_id" class="form-select mb-2">{% for b, s in ringkasan %}<option value="{{ b.id }}">{{ b.nama }} ({{ b.satuan }})</option>{% endfor %}</select>
-  <div class="d-flex gap-2 mb-2"><select name="tipe" class="form-select"><option value="masuk">Masuk</option><option value="keluar">Keluar</option></select>
-  <input name="jumlah" type="number" step="any" min="0" class="form-control" placeholder="Jumlah" required></div>
-  <input name="keterangan" class="form-control mb-2" placeholder="Keterangan (opsional)">
-  <button class="btn btn-dark w-100">Simpan</button>
-</form></div>
-<div class="card card-body"><h5 class="fw-bold">Bahan baru</h5>
-<form method="post" action="{{ url_for('stok.tambah_bahan') }}">
-  <input name="nama" class="form-control mb-2" placeholder="Nama bahan" required>
-  <div class="d-flex gap-2 mb-2"><input name="satuan" class="form-control" placeholder="Satuan (gram/ml/pcs)" value="gram"><input name="stok_minimum" type="number" step="any" class="form-control" placeholder="Min." value="0"></div>
-  <input name="cara_penyimpanan" class="form-control mb-2" placeholder="Cara penyimpanan">
-  <button class="btn btn-outline-dark w-100">Tambah</button>
-</form></div>
-</div>
+
+<div class="row g-4">
+  <!-- Kolom Kiri: Tabel Ringkasan & Log Mutasi -->
+  <div class="col-lg-7">
+    <!-- Tabel Ringkasan Bahan -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-box2 me-2"></i> Ringkasan Stok Bahan Saat Ini</span>
+        <span class="badge bg-light text-dark border">{{ ringkasan|length }} Bahan</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              <th>Nama Bahan</th>
+              <th>Sisa Stok</th>
+              <th>Stok Min.</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for b, sisa in ringkasan %}
+            <tr>
+              <td>
+                <div class="fw-semibold">{{ b.nama }}</div>
+                {% if b.cara_penyimpanan %}
+                <small class="text-muted"><i class="bi bi-info-circle me-1"></i>{{ b.cara_penyimpanan }}</small>
+                {% endif %}
+              </td>
+              <td class="fw-bold">
+                {{ "%.0f"|format(sisa or 0) }} <span class="fw-normal text-muted small">{{ b.satuan }}</span>
+              </td>
+              <td class="text-muted">
+                {{ "%.0f"|format(b.stok_minimum or 0) }} <span class="small">{{ b.satuan }}</span>
+              </td>
+              <td>
+                {% if (sisa or 0) <= (b.stok_minimum or 0) %}
+                  <span class="badge badge-soft-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i>Menipis</span>
+                {% else %}
+                  <span class="badge badge-soft-success"><i class="bi bi-check-circle-fill me-1"></i>Aman</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-center text-muted py-3">Belum ada bahan terdaftar.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Mutasi Terakhir -->
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <i class="bi bi-arrow-down-up me-2"></i> Riwayat Mutasi Terakhir
+      </div>
+      <ul class="list-group list-group-flush">
+        {% for m in mutasi %}
+        <li class="list-group-item d-flex justify-content-between align-items-center py-2">
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge {% if m.tipe=='masuk' %}badge-soft-success{% else %}badge-soft-danger{% endif %} text-uppercase">
+              <i class="bi {% if m.tipe=='masuk' %}bi-arrow-down-left{% else %}bi-arrow-up-right{% endif %} me-1"></i>{{ m.tipe }}
+            </span>
+            <span class="fw-medium">{{ m.bahan.nama }}</span>
+            <span class="text-muted small">({{ "%.0f"|format(m.jumlah) }} {{ m.bahan.satuan }})</span>
+            {% if m.keterangan %}
+            <span class="text-muted small italic ms-1">"{{ m.keterangan }}"</span>
+            {% endif %}
+          </div>
+          <span class="text-muted small">{{ m.tanggal }}</span>
+        </li>
+        {% else %}
+        <li class="list-group-item text-center text-muted py-3">Belum ada catatan mutasi.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <!-- Kolom Kanan: Form Catat Mutasi & Tambah Bahan Baru -->
+  <div class="col-lg-5">
+    <!-- Form Mutasi -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-header py-3">
+        <i class="bi bi-pencil-square me-2 text-primary"></i> Catat Bahan Masuk / Keluar
+      </div>
+      <div class="card-body">
+        <form method="post" action="{{ url_for('stok.catat') }}">
+          <div class="mb-3">
+            <label class="form-label">Pilih Bahan</label>
+            <select name="bahan_id" class="form-select">
+              {% for b, s in ringkasan %}
+              <option value="{{ b.id }}">{{ b.nama }} (Sisa: {{ "%.0f"|format(s or 0) }} {{ b.satuan }})</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label">Jenis Mutasi</label>
+              <select name="tipe" class="form-select">
+                <option value="masuk">Masuk (Restock)</option>
+                <option value="keluar">Keluar (Pemakaian)</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Jumlah</label>
+              <input name="jumlah" type="number" step="any" min="0.1" class="form-control" placeholder="0" required>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Keterangan (Opsional)</label>
+            <input name="keterangan" class="form-control" placeholder="cth: Belanja mingguan / Tumpah / Expired">
+          </div>
+          <button class="btn btn-dark w-100">
+            <i class="bi bi-save me-1"></i> Simpan Catatan Mutasi
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Form Tambah Bahan Baru -->
+    <div class="card shadow-sm">
+      <div class="card-header py-3">
+        <i class="bi bi-plus-circle me-2 text-secondary"></i> Daftarkan Bahan Baru
+      </div>
+      <div class="card-body">
+        <form method="post" action="{{ url_for('stok.tambah_bahan') }}">
+          <div class="mb-3">
+            <label class="form-label">Nama Bahan</label>
+            <input name="nama" class="form-control" placeholder="cth: Sirup Hazelnut Monin" required>
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label">Satuan Ukuran</label>
+              <input name="satuan" class="form-control" placeholder="gram / ml / pcs" value="gram">
+            </div>
+            <div class="col-6">
+              <label class="form-label">Batas Minimum</label>
+              <input name="stok_minimum" type="number" step="any" class="form-control" placeholder="0" value="0">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Cara Penyimpanan / Suhu</label>
+            <input name="cara_penyimpanan" class="form-control" placeholder="cth: Kulkas chiller 4°C, hindari panas">
+          </div>
+          <button class="btn btn-outline-dark w-100">
+            <i class="bi bi-plus-lg me-1"></i> Tambah ke Katalog Bahan
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

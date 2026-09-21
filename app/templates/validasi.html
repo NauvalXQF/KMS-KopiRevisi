@@ -1,21 +1,66 @@
 {% extends "base.html" %}
-{% block title %}Validasi{% endblock %}
+{% block title %}Validasi Pengetahuan{% endblock %}
 {% block content %}
-<h2 class="fw-bold mb-3">Antrean Validasi</h2>
+<div class="page-header">
+  <h2>Antrean Validasi Pengetahuan</h2>
+  <p>Tinjau draf pengetahuan baru atau revisi dari barista/karyawan sebelum diterbitkan ke pustaka kedai.</p>
+</div>
+
 {% for p in items %}
-<div class="card mb-2"><div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
-  <div><a href="{{ url_for('pengetahuan.detail', pid=p.id) }}" class="fw-bold text-decoration-none text-dark">{{ p.judul }}</a>
-  <div class="text-muted small">{{ p.kategori.nama if p.kategori else '-' }} • {{ p.status }} • v{{ p.versi }} • {{ p.penulis.nama if p.penulis else '-' }}</div></div>
-  <div class="d-flex gap-2">
-    <form method="post" action="{{ url_for('validasi.setujui', pid=p.id) }}"><button class="btn btn-success btn-sm">Setujui & Terbit</button></form>
-    <button class="btn btn-outline-warning btn-sm" data-bs-toggle="collapse" data-bs-target="#rev{{ p.id }}">Revisi</button>
+<div class="card shadow-sm mb-3">
+  <div class="card-body">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+      <div>
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <span class="badge badge-soft-caramel">{{ p.kategori.nama if p.kategori else 'Umum' }}</span>
+          <span class="badge badge-soft-warning"><i class="bi bi-hourglass-split"></i> {{ p.status }}</span>
+          <span class="badge bg-light text-muted border">v{{ p.versi }}</span>
+        </div>
+        <h5 class="fw-bold mb-1">
+          <a href="{{ url_for('pengetahuan.detail', pid=p.id) }}" class="text-decoration-none text-dark">
+            {{ p.judul }}
+          </a>
+        </h5>
+        <div class="text-muted small">
+          <span><i class="bi bi-person me-1"></i> Diajukan oleh: <b>{{ p.penulis.nama if p.penulis else 'Karyawan' }}</b></span>
+          <span class="mx-1">•</span>
+          <a href="{{ url_for('pengetahuan.detail', pid=p.id) }}" class="text-decoration-underline text-secondary">
+            Lihat isi draf lengkap <i class="bi bi-box-arrow-up-right"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 align-items-center flex-wrap">
+        <form method="post" action="{{ url_for('validasi.setujui', pid=p.id) }}" class="m-0">
+          <button class="btn btn-sm btn-success">
+            <i class="bi bi-check-circle me-1"></i> Setujui & Terbitkan
+          </button>
+        </form>
+        <button class="btn btn-sm btn-outline-warning text-dark" data-bs-toggle="collapse" data-bs-target="#rev{{ p.id }}">
+          <i class="bi bi-pencil-square me-1"></i> Minta Revisi
+        </button>
+      </div>
+    </div>
+
+    <!-- Collapse form for revision note -->
+    <div class="collapse mt-3 pt-3 border-top" id="rev{{ p.id }}">
+      <form method="post" action="{{ url_for('validasi.revisi', pid=p.id) }}">
+        <label class="form-label small fw-semibold text-muted">Beri catatan perbaikan atau alasan revisi kepada penulis:</label>
+        <div class="d-flex gap-2">
+          <input name="catatan" class="form-control form-control-sm" placeholder="Contoh: Takaran sirup aren tolong kurangi jadi 20ml..." required>
+          <button class="btn btn-warning btn-sm text-nowrap">
+            <i class="bi bi-send me-1"></i> Kirim Catatan Revisi
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
-<div class="collapse px-3 pb-3" id="rev{{ p.id }}">
-  <form method="post" action="{{ url_for('validasi.revisi', pid=p.id) }}" class="d-flex gap-2">
-    <input name="catatan" class="form-control form-control-sm" placeholder="Catatan revisi..." required>
-    <button class="btn btn-warning btn-sm">Kirim</button>
-  </form>
-</div></div>
-{% else %}<p class="text-muted">Antrean kosong. 🎉</p>{% endfor %}
+{% else %}
+<div class="card p-5 text-center shadow-sm">
+  <div class="text-success fs-1 mb-2">🎉</div>
+  <h5 class="fw-bold">Antrean Validasi Bersih</h5>
+  <p class="text-muted small">Semua pengajuan pengetahuan telah ditinjau dan terbit.</p>
+</div>
+{% endfor %}
 {% endblock %}

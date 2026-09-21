@@ -1,18 +1,97 @@
 {% extends "base.html" %}
-{% block title %}Pengguna{% endblock %}
+{% block title %}Kelola Pengguna{% endblock %}
 {% block content %}
-<h2 class="fw-bold mb-3">Kelola Pengguna</h2>
-<div class="row g-3">
-<div class="col-md-7"><div class="card"><table class="table mb-0"><thead><tr><th>Nama</th><th>Peran</th><th>Status</th><th></th></tr></thead><tbody>
-{% for u in users %}<tr><td>{{ u.nama }}</td><td>{{ u.peran }}</td><td>{{ 'Aktif' if u.aktif else 'Nonaktif' }}</td>
-<td><form method="post" action="{{ url_for('auth.toggle', user_id=u.id) }}"><button class="btn btn-sm btn-outline-secondary">Toggle</button></form></td></tr>{% endfor %}
-</tbody></table></div></div>
-<div class="col-md-5"><div class="card card-body"><h5 class="fw-bold">Tambah</h5>
-<form method="post" action="{{ url_for('auth.tambah') }}">
-  <input name="nama" class="form-control mb-2" placeholder="Nama" required>
-  <select name="peran" class="form-select mb-2"><option value="karyawan">karyawan</option><option value="pemilik">pemilik</option></select>
-  <input name="pin" class="form-control mb-2" placeholder="PIN" required>
-  <button class="btn btn-dark w-100">Tambah</button>
-</form></div></div>
+<div class="page-header">
+  <h2>Kelola Pengguna & Hak Akses</h2>
+  <p>Pengaturan akun staf (Pemilik dan Karyawan) serta aktivasi akses login PIN.</p>
+</div>
+
+<div class="row g-4">
+  <!-- Tabel Pengguna -->
+  <div class="col-lg-7">
+    <div class="card shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-people me-2"></i> Daftar Pengguna Sistem</span>
+        <span class="badge bg-light text-dark border">{{ users|length }} Akun</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              <th>Nama Staf</th>
+              <th>Peran</th>
+              <th>Status Akun</th>
+              <th class="text-end">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in users %}
+            <tr>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <div class="rounded-circle bg-light border d-flex align-items-center justify-content-center fw-bold text-muted" style="width: 32px; height: 32px; font-size: 0.8rem;">
+                    {{ u.nama[:1]|upper }}
+                  </div>
+                  <span class="fw-semibold text-dark">{{ u.nama }}</span>
+                </div>
+              </td>
+              <td>
+                <span class="badge {% if u.peran=='pemilik' %}badge-soft-caramel{% else %}badge-soft-info{% endif %}">
+                  {{ u.peran }}
+                </span>
+              </td>
+              <td>
+                {% if u.aktif %}
+                  <span class="badge badge-soft-success"><i class="bi bi-check-circle me-1"></i>Aktif</span>
+                {% else %}
+                  <span class="badge badge-soft-danger"><i class="bi bi-x-circle me-1"></i>Nonaktif</span>
+                {% endif %}
+              </td>
+              <td class="text-end">
+                <form method="post" action="{{ url_for('auth.toggle', user_id=u.id) }}" class="m-0">
+                  <button class="btn btn-sm btn-outline-secondary" title="Ubah status aktif">
+                    <i class="bi bi-arrow-repeat me-1"></i> Ubah Status
+                  </button>
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Tambah Pengguna -->
+  <div class="col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-header py-3">
+        <i class="bi bi-person-plus me-2 text-primary"></i> Tambah Pengguna Baru
+      </div>
+      <div class="card-body">
+        <form method="post" action="{{ url_for('auth.tambah') }}">
+          <div class="mb-3">
+            <label class="form-label">Nama Pengguna</label>
+            <input name="nama" class="form-control" placeholder="cth: Barista Budi" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Peran / Hak Akses</label>
+            <select name="peran" class="form-select">
+              <option value="karyawan">Karyawan (Operasional & Pengetahuan)</option>
+              <option value="pemilik">Pemilik (Akses Penuh & Validasi)</option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label class="form-label">PIN Masuk (4-6 Digit)</label>
+            <input name="pin" type="password" inputmode="numeric" class="form-control" placeholder="••••" required>
+            <div class="form-text">PIN akan di-hash demi keamanan sebelum disimpan.</div>
+          </div>
+          <button class="btn btn-dark w-100">
+            <i class="bi bi-plus-lg me-1"></i> Daftarkan Pengguna
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

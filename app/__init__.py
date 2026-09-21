@@ -13,15 +13,34 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 def _build_db_uri() -> str:
     load_dotenv(BASE_DIR / ".env")
+    driver = os.getenv("DB_DRIVER", "auto").lower()
+    sqlite_uri = f"sqlite:///{BASE_DIR / 'kms_kopi.db'}"
+
+    if driver == "sqlite":
+        print("[KMS Kopi] Menggunakan database: SQLite (kms_kopi.db)")
+        return sqlite_uri
+
     host = os.getenv("DB_HOST", "localhost")
-    port = os.getenv("DB_PORT", "3306")
+    port = int(os.getenv("DB_PORT", "3306"))
     user = os.getenv("DB_USER", "root")
     password = os.getenv("DB_PASSWORD", "")
     name = os.getenv("DB_NAME", "kms_kopi")
-    # Fallback ke SQLite bila diminta eksplisit (DB_DRIVER=sqlite), untuk demo tanpa MySQL.
-    if os.getenv("DB_DRIVER", "mysql").lower() == "sqlite":
-        return f"sqlite:///{BASE_DIR / 'kms_kopi.db'}"
-    return f"mysql+pymysql://{user}:{password}@{host}:{port}/{name}?charset=utf8mb4"
+    mysql_uri = f"mysql+pymysql://{user}:{password}@{host}:{port}/{name}?charset=utf8mb4"
+
+    if driver == "mysql":
+        print(f"[KMS Kopi] Menggunakan database: MySQL ({host}:{port}/{name})")
+        return mysql_uri
+
+    # Driver 'auto': coba cek apakah MySQL sedang aktif
+    import socket
+    try:
+        sock = socket.create_connection((host, port), timeout=0.5)
+        sock.close()
+        print(f"[KMS Kopi] MySQL terdeteksi aktif pada {host}:{port}. Menggunakan MySQL.")
+        return mysql_uri
+    except OSError:
+        print("[KMS Kopi] Layanan MySQL tidak aktif. Otomatis beralih ke SQLite (kms_kopi.db) agar aplikasi tetap berjalan lancar.")
+        return sqlite_uri
 
 
 def create_app():

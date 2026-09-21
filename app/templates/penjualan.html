@@ -1,21 +1,112 @@
 {% extends "base.html" %}
-{% block title %}Penjualan{% endblock %}
+{% block title %}Pencatatan Penjualan{% endblock %}
 {% block content %}
-<h2 class="fw-bold mb-3">Penjualan</h2>
-<div class="row g-3 mb-3">
-  <div class="col-md-6"><div class="card stat"><div class="card-body"><div class="stat-num">{{ total_cup }}</div><div class="text-muted">Total cup</div></div></div></div>
-  <div class="col-md-6"><div class="card stat"><div class="card-body"><div class="stat-num">Rp {{ "%.0f"|format(total_omzet or 0) }}</div><div class="text-muted">Omzet</div></div></div></div>
+<div class="page-header">
+  <h2>Data Penjualan Kedai</h2>
+  <p>Catat transaksi menu harian dan pantau akumulasi omzet serta total cup terjual.</p>
 </div>
-<div class="row g-3">
-<div class="col-md-8"><div class="card"><div class="card-header fw-bold">Riwayat</div>
-<table class="table table-sm mb-0"><thead><tr><th>Waktu</th><th>Menu</th><th>Jml</th><th>Harga</th></tr></thead><tbody>
-{% for p in items %}<tr><td class="small">{{ p.waktu }}</td><td>{{ p.nama_menu }}</td><td>{{ p.jumlah }}</td><td>Rp {{ p.harga_satuan }}</td></tr>{% endfor %}
-</tbody></table></div></div>
-<div class="col-md-4"><div class="card card-body"><h5 class="fw-bold">Catat penjualan</h5>
-<form method="post" action="{{ url_for('penjualan.tambah') }}">
-  <input name="nama_menu" class="form-control mb-2" placeholder="Nama menu" required>
-  <div class="d-flex gap-2 mb-2"><input name="jumlah" type="number" min="1" value="1" class="form-control"><input name="harga_satuan" type="number" step="any" class="form-control" placeholder="Harga" required></div>
-  <button class="btn btn-dark w-100">Simpan</button>
-</form></div></div>
+
+<!-- Stat Cards -->
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
+    <div class="card stat-card shadow-sm">
+      <div class="card-body d-flex justify-content-between align-items-center">
+        <div>
+          <div class="stat-label">Total Cup Terjual</div>
+          <div class="stat-num text-dark">{{ total_cup }} <span class="fs-5 text-muted fw-normal">Cup</span></div>
+        </div>
+        <div class="stat-icon" style="background: var(--caramel-100); color: var(--coffee-700);">
+          <i class="bi bi-cup-hot"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card stat-card shadow-sm">
+      <div class="card-body d-flex justify-content-between align-items-center">
+        <div>
+          <div class="stat-label">Total Estimasi Omzet</div>
+          <div class="stat-num text-success">Rp {{ "{:,.0f}".format(total_omzet or 0) }}</div>
+        </div>
+        <div class="stat-icon" style="background: var(--status-success-bg); color: var(--status-success-text);">
+          <i class="bi bi-cash-stack"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Tabel Riwayat Penjualan -->
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-receipt me-2"></i> Log Riwayat Penjualan</span>
+        <span class="badge bg-light text-dark border">{{ items|length }} Transaksi</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              <th>Waktu Transaksi</th>
+              <th>Nama Menu</th>
+              <th class="text-center">Kuantitas</th>
+              <th class="text-end">Harga Satuan</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in items %}
+            <tr>
+              <td class="small text-muted">
+                <i class="bi bi-clock me-1"></i>{{ p.waktu }}
+              </td>
+              <td class="fw-semibold">{{ p.nama_menu }}</td>
+              <td class="text-center">
+                <span class="badge bg-light text-dark border px-2 py-1">{{ p.jumlah }} cup</span>
+              </td>
+              <td class="text-end fw-semibold text-dark">
+                Rp {{ "{:,.0f}".format(p.harga_satuan) }}
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-center text-muted py-4">Belum ada data penjualan tercatat.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Catat Penjualan -->
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-header py-3">
+        <i class="bi bi-plus-circle me-2 text-primary"></i> Catat Transaksi Baru
+      </div>
+      <div class="card-body">
+        <form method="post" action="{{ url_for('penjualan.tambah') }}">
+          <div class="mb-3">
+            <label class="form-label">Nama Menu</label>
+            <input name="nama_menu" class="form-control" placeholder="cth: Kopi Susu Aren" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Jumlah Cup</label>
+            <input name="jumlah" type="number" min="1" value="1" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Harga Satuan (Rp)</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light">Rp</span>
+              <input name="harga_satuan" type="number" step="any" class="form-control" placeholder="18000" required>
+            </div>
+          </div>
+          <button class="btn btn-dark w-100">
+            <i class="bi bi-check-lg me-1"></i> Simpan Penjualan
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
