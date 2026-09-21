@@ -11,14 +11,14 @@ from werkzeug.security import generate_password_hash
 
 from app import create_app, db
 from app.models import (
-    Bahan, Kategori, Komplain, Notifikasi, Pengguna, Pengetahuan,
+    Bahan, Kategori, Komplain, Menu, Notifikasi, Pengguna, Pengetahuan,
     PengetahuanVersi, Penjualan, Stok, Supplier, SupplierBahan,
 )
 
 
 def reset():
     for m in [Notifikasi, Penjualan, Stok, SupplierBahan, Komplain,
-              PengetahuanVersi, Pengetahuan, Bahan, Supplier, Kategori, Pengguna]:
+              PengetahuanVersi, Pengetahuan, Bahan, Supplier, Kategori, Pengguna, Menu]:
         db.session.query(m).delete()
     db.session.commit()
 
@@ -130,6 +130,10 @@ def main():
         # Penjualan: 40 transaksi tersebar jam 08-21 untuk dashboard
         menus = [("Kopi Susu Gula Aren", 15000), ("Espresso", 12000),
                  ("Americano", 13000), ("Latte", 17000), ("Matcha Latte", 18000)]
+        for nama, harga in menus:
+            if not Menu.query.filter_by(nama=nama).first():
+                db.session.add(Menu(nama=nama, harga_default=harga, aktif=True))
+        db.session.commit()
         base = datetime.now().replace(hour=8, minute=0, second=0, microsecond=0)
         for i in range(40):
             nama, harga = menus[i % len(menus)]

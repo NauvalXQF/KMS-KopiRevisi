@@ -112,6 +112,18 @@ class Penjualan(db.Model):
     dicatat_oleh = db.Column(db.Integer, db.ForeignKey("pengguna.id"))
 
 
+class Menu(db.Model):
+    """Master menu & harga standar (dikelola pemilik, dipilih kasir)."""
+
+    __tablename__ = "menu"
+    id = db.Column(db.Integer, primary_key=True)
+    nama = db.Column(db.String(100), nullable=False, unique=True)
+    harga_default = db.Column(db.Numeric(12, 2), default=0, nullable=False)
+    aktif = db.Column(db.Boolean, default=True, nullable=False)
+    created_at = db.Column(db.DateTime, default=_now)
+    updated_at = db.Column(db.DateTime, default=_now, onupdate=_now)
+
+
 class Komplain(db.Model):
     __tablename__ = "komplain"
     id = db.Column(db.Integer, primary_key=True)

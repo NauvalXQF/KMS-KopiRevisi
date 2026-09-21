@@ -67,6 +67,7 @@ def create_app():
     from app.routes.auth import bp as auth_bp
     from app.routes.dashboard import bp as dashboard_bp
     from app.routes.komplain import bp as komplain_bp
+    from app.routes.menu import bp as menu_bp
     from app.routes.notifikasi import bp as notifikasi_bp
     from app.routes.pengetahuan import bp as pengetahuan_bp
     from app.routes.penjualan import bp as penjualan_bp
@@ -76,6 +77,7 @@ def create_app():
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(dashboard_bp)
+    app.register_blueprint(menu_bp)
     app.register_blueprint(pengetahuan_bp)
     app.register_blueprint(validasi_bp)
     app.register_blueprint(stok_bp)

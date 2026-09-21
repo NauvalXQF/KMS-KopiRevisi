@@ -7,17 +7,61 @@
     <h2 class="page-title">Pencatatan Penjualan</h2>
     <p class="page-subtitle">Rekap transaksi menu, estimasi omzet, dan total cup terjual.</p>
   </div>
+  <div class="d-flex gap-2">
+    <a href="{{ export_url }}" class="btn btn-outline-dark btn-sm">
+      <i class="bi bi-file-earmark-excel"></i> Export Excel
+    </a>
+  </div>
+</div>
+
+<!-- Filter periode -->
+<div class="card mb-4">
+  <div class="card-body">
+    <form method="get" class="row g-2 align-items-end">
+      <div class="col-md-3">
+        <label class="form-label">Mode Periode</label>
+        <select name="mode" id="filterMode" class="form-select" onchange="togglePeriodeInputs()">
+          <option value="harian" {% if mode=='harian' %}selected{% endif %}>Harian</option>
+          <option value="bulanan" {% if mode=='bulanan' %}selected{% endif %}>Bulanan</option>
+          <option value="semua" {% if mode=='semua' %}selected{% endif %}>Semua</option>
+        </select>
+      </div>
+      <div class="col-md-3" id="wrapTanggal">
+        <label class="form-label">Tanggal</label>
+        <input type="date" name="tanggal" value="{{ tanggal_str }}" class="form-control">
+      </div>
+      <div class="col-md-3" id="wrapBulan">
+        <label class="form-label">Bulan</label>
+        <input type="month" name="bulan" value="{{ bulan_str }}" class="form-control">
+      </div>
+      <div class="col-md-3 d-flex gap-2">
+        <button class="btn btn-dark flex-grow-1">
+          <i class="bi bi-funnel"></i> Filter
+        </button>
+        <a href="{{ url_for('penjualan.daftar', mode='semua') }}" class="btn btn-outline-dark" title="Reset">
+          <i class="bi bi-arrow-counterclockwise"></i>
+        </a>
+      </div>
+    </form>
+    <div class="filter-chip-group mt-3 pt-3 border-top">
+      <span class="section-label me-1">Cepat:</span>
+      <a href="{{ url_for('penjualan.daftar', mode='harian', tanggal=tanggal_str) }}" class="filter-chip {% if mode=='harian' %}active{% endif %}">Hari ini</a>
+      <a href="{{ url_for('penjualan.daftar', mode='bulanan', bulan=bulan_str) }}" class="filter-chip {% if mode=='bulanan' %}active{% endif %}">Bulan ini</a>
+      <a href="{{ url_for('penjualan.daftar', mode='semua') }}" class="filter-chip {% if mode=='semua' %}active{% endif %}">Semua</a>
+      <span class="badge badge-soft-caramel ms-auto">Periode: {{ periode_label }}</span>
+    </div>
+  </div>
 </div>
 
 <!-- Stat Row -->
 <div class="row g-3 mb-4">
-  <div class="col-md-6">
+  <div class="col-md-4">
     <div class="card stat-card stat-card-knowledge">
       <div class="card-body d-flex justify-content-between align-items-center">
         <div>
           <div class="stat-label">Total Cup Terjual</div>
           <div class="stat-num">{{ total_cup }}</div>
-          <div class="stat-label mt-1">cup dari semua menu</div>
+          <div class="stat-label mt-1">{{ periode_label }}</div>
         </div>
         <div class="stat-icon stat-icon-knowledge">
           <i class="bi bi-cup-hot"></i>
@@ -25,7 +69,7 @@
       </div>
     </div>
   </div>
-  <div class="col-md-6">
+  <div class="col-md-4">
     <div class="card stat-card stat-card-complaint">
       <div class="card-body d-flex justify-content-between align-items-center">
         <div>
@@ -33,10 +77,24 @@
           <div class="stat-num" style="font-size:1.65rem;">
             Rp {{ "{:,.0f}".format(total_omzet or 0) }}
           </div>
-          <div class="stat-label mt-1">berdasarkan harga input</div>
+          <div class="stat-label mt-1">{{ periode_label }}</div>
         </div>
         <div class="stat-icon stat-icon-complaint">
           <i class="bi bi-cash-stack"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card stat-card stat-card-validation">
+      <div class="card-body d-flex justify-content-between align-items-center">
+        <div>
+          <div class="stat-label">Jumlah Transaksi</div>
+          <div class="stat-num">{{ total_trx }}</div>
+          <div class="stat-label mt-1">{{ periode_label }}</div>
+        </div>
+        <div class="stat-icon stat-icon-validation">
+          <i class="bi bi-receipt"></i>
         </div>
       </div>
     </div>
@@ -62,7 +120,10 @@
               <th>Waktu</th>
               <th>Menu</th>
               <th class="text-center">Jumlah</th>
-              <th class="text-end">Harga Satuan</th>
+              <th class="text-end">Subtotal</th>
+              {% if current_user.peran == 'pemilik' %}
+              <th class="text-end">Aksi</th>
+              {% endif %}
             </tr>
           </thead>
           <tbody>
@@ -71,22 +132,37 @@
               <td style="white-space:nowrap;">
                 <span class="text-muted" style="font-size:0.78rem;">{{ p.waktu }}</span>
               </td>
-              <td class="fw-semibold">{{ p.nama_menu }}</td>
+              <td>
+                <div class="fw-semibold">{{ p.nama_menu }}</div>
+                <small class="text-muted">Rp {{ "{:,.0f}".format(p.harga_satuan) }}/cup</small>
+              </td>
               <td class="text-center">
                 <span class="badge badge-soft-neutral">{{ p.jumlah }} cup</span>
               </td>
               <td class="text-end fw-semibold" style="color:var(--status-success-text);">
-                Rp {{ "{:,.0f}".format(p.harga_satuan) }}
+                Rp {{ "{:,.0f}".format((p.jumlah or 0) * (p.harga_satuan or 0)) }}
               </td>
+              {% if current_user.peran == 'pemilik' %}
+              <td class="text-end">
+                <form method="post" action="{{ url_for('penjualan.hapus', pid=p.id) }}" class="m-0" onsubmit="return confirm('Hapus transaksi {{ p.nama_menu }} ini? Minta konfirmasi kasir dulu bila perlu.')">
+                  <input type="hidden" name="mode" value="{{ mode }}">
+                  <input type="hidden" name="tanggal" value="{{ tanggal_str }}">
+                  <input type="hidden" name="bulan" value="{{ bulan_str }}">
+                  <button class="btn btn-sm btn-outline-dark" title="Hapus (khusus pemilik)" style="border-color:var(--status-danger-border); color:var(--status-danger-text);">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </form>
+              </td>
+              {% endif %}
             </tr>
             {% else %}
             <tr>
-              <td colspan="4">
+              <td colspan="{% if current_user.peran == 'pemilik' %}5{% else %}4{% endif %}">
                 <div class="empty-state py-3">
                   <div class="empty-state-icon" style="width:44px;height:44px;font-size:1.2rem;margin:0 auto 0.5rem;">
                     <i class="bi bi-receipt"></i>
                   </div>
-                  <p class="mb-0" style="font-size:0.82rem;">Belum ada transaksi dicatat.</p>
+                  <p class="mb-0" style="font-size:0.82rem;">Belum ada transaksi pada periode ini.</p>
                 </div>
               </td>
             </tr>
@@ -99,17 +175,25 @@
 
   <!-- Form Catat -->
   <div class="col-lg-4">
-    <div class="card">
+    <div class="card mb-4">
       <div class="card-header">
         <i class="bi bi-plus-circle me-2" style="color:var(--status-info-text);"></i>
         Catat Transaksi Baru
       </div>
       <div class="card-body">
         <form method="post" action="{{ url_for('penjualan.tambah') }}">
+          <input type="hidden" name="mode" value="{{ mode }}">
+          <input type="hidden" name="tanggal" value="{{ tanggal_str }}">
+          <input type="hidden" name="bulan" value="{{ bulan_str }}">
           <div class="mb-3">
             <label class="form-label">Nama Menu</label>
-            <input name="nama_menu" class="form-control"
-                   placeholder="cth: Kopi Susu Aren" required>
+            <select name="nama_menu" id="selectMenu" class="form-select" required onchange="syncHargaPenjualan()">
+              <option value="">— Pilih menu —</option>
+              {% for m in menus %}
+              <option value="{{ m.nama }}" data-harga="{{ m.harga_default }}">{{ m.nama }} — Rp {{ "{:,.0f}".format(m.harga_default) }}</option>
+              {% endfor %}
+            </select>
+            <div class="form-text">Harga mengikuti master menu agar kasir tidak salah input.</div>
           </div>
           <div class="mb-3">
             <label class="form-label">Jumlah (Cup)</label>
@@ -117,11 +201,10 @@
                    class="form-control" required>
           </div>
           <div class="mb-4">
-            <label class="form-label">Harga Satuan</label>
+            <label class="form-label">Harga Satuan (otomatis)</label>
             <div class="input-group">
               <span class="input-group-text">Rp</span>
-              <input name="harga_satuan" type="number" step="any"
-                     class="form-control" placeholder="18000" required>
+              <input id="inputHarga" type="text" class="form-control" placeholder="Pilih menu dulu" readonly>
             </div>
           </div>
           <button class="btn btn-dark w-100">
@@ -130,6 +213,48 @@
         </form>
       </div>
     </div>
+
+    {% if current_user.peran == 'pemilik' %}
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-card-list me-2" style="color:var(--caramel-500);"></i> Kelola Menu & Harga</span>
+        <span class="badge badge-soft-neutral">{{ menus_all|length }} menu</span>
+      </div>
+      <div class="card-body">
+        <form method="post" action="{{ url_for('menu.tambah') }}" class="row g-2 mb-3">
+          <div class="col-7">
+            <input name="nama" class="form-control form-control-sm" placeholder="Nama menu baru" required>
+          </div>
+          <div class="col-3">
+            <input name="harga_default" type="number" min="0" step="any" class="form-control form-control-sm" placeholder="Harga" required>
+          </div>
+          <div class="col-2">
+            <button class="btn btn-sm btn-dark w-100" title="Tambah menu"><i class="bi bi-plus-lg"></i></button>
+          </div>
+        </form>
+        {% for m in menus_all %}
+        <form method="post" action="{{ url_for('menu.update', mid=m.id) }}" class="d-flex gap-2 align-items-center mb-2">
+          <div class="flex-grow-1">
+            <input name="nama" value="{{ m.nama }}" class="form-control form-control-sm fw-semibold">
+            {% if not m.aktif %}<span class="badge badge-soft-neutral mt-1">Nonaktif</span>{% endif %}
+          </div>
+          <div style="width:110px;">
+            <input name="harga_default" type="number" min="0" step="any" value="{{ m.harga_default }}" class="form-control form-control-sm text-end">
+          </div>
+          <button class="btn btn-sm btn-outline-dark" title="Simpan"><i class="bi bi-check"></i></button>
+        </form>
+        <form method="post" action="{{ url_for('menu.toggle', mid=m.id) }}" class="m-0 mb-3">
+          <button class="btn btn-sm btn-outline-dark w-100">
+            {% if m.aktif %}Nonaktifkan{% else %}Aktifkan{% endif %} {{ m.nama }}
+          </button>
+        </form>
+        {% else %}
+        <p class="text-muted small mb-0">Belum ada menu. Tambahkan di atas.</p>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
   </div>
 </div>
+
 {% endblock %}
