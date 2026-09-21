@@ -17,7 +17,7 @@ def _build_db_uri() -> str:
     sqlite_uri = f"sqlite:///{BASE_DIR / 'kms_kopi.db'}"
 
     if driver == "sqlite":
-        print("[KMS Kopi] Menggunakan database: SQLite (kms_kopi.db)")
+        print("[Kopi Revisi] Menggunakan database: SQLite (kms_kopi.db)")
         return sqlite_uri
 
     host = os.getenv("DB_HOST", "localhost")
@@ -28,7 +28,7 @@ def _build_db_uri() -> str:
     mysql_uri = f"mysql+pymysql://{user}:{password}@{host}:{port}/{name}?charset=utf8mb4"
 
     if driver == "mysql":
-        print(f"[KMS Kopi] Menggunakan database: MySQL ({host}:{port}/{name})")
+        print(f"[Kopi Revisi] Menggunakan database: MySQL ({host}:{port}/{name})")
         return mysql_uri
 
     # Driver 'auto': coba cek apakah MySQL sedang aktif
@@ -36,10 +36,10 @@ def _build_db_uri() -> str:
     try:
         sock = socket.create_connection((host, port), timeout=0.5)
         sock.close()
-        print(f"[KMS Kopi] MySQL terdeteksi aktif pada {host}:{port}. Menggunakan MySQL.")
+        print(f"[Kopi Revisi] MySQL terdeteksi aktif pada {host}:{port}. Menggunakan MySQL.")
         return mysql_uri
     except OSError:
-        print("[KMS Kopi] Layanan MySQL tidak aktif. Otomatis beralih ke SQLite (kms_kopi.db) agar aplikasi tetap berjalan lancar.")
+        print("[Kopi Revisi] Layanan MySQL tidak aktif. Otomatis beralih ke SQLite (kms_kopi.db) agar aplikasi tetap berjalan lancar.")
         return sqlite_uri
 
 
