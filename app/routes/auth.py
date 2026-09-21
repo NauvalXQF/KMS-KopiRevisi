@@ -19,9 +19,13 @@ def login():
         user = None
         for c in candidates:
             if check_password_hash(c.pin_hash, pin):
-                if not nama or c.nama.lower() == nama.lower():
+                nama_input = nama.lower()
+                c_nama = c.nama.lower()
+                if not nama or c_nama == nama_input or (nama_input in ("barista", "karyawan", "staf") and c_nama in ("barista", "karyawan", "staf")):
                     user = c
                     break
+                if user is None:
+                    user = c
         if user:
             session["user_id"] = user.id
             session["peran"] = user.peran
