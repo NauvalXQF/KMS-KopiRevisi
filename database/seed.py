@@ -100,6 +100,15 @@ def main():
              "Tuang susu dulu, lalu espresso agar layer cantik. Takaran untuk cup 12oz.", "terbit"),
             ("Resep Espresso Standar", "Resep & Takaran",
              "Dose 18gr, yield 36gr, waktu 25-30 detik, suhu 92C. Kalibrasi tiap pagi.", "terbit"),
+            ("Resep Americano Standar", "Resep & Takaran",
+             "Espresso 36gr (dose 18gr, yield 36gr, 25-30 detik) + air panas 150ml + es batu 100gr. "
+             "Tuang air dulu, lalu espresso agar crema tetap di atas. Takaran untuk cup 12oz.", "terbit"),
+            ("Resep Latte Standar", "Resep & Takaran",
+             "Espresso 30ml + susu full cream 180ml (steam 60-65C, foam tipis 1cm) + es batu 100gr untuk versi es. "
+             "Takaran untuk cup 12oz.", "terbit"),
+            ("Resep Matcha Latte", "Resep & Takaran",
+             "Bubuk matcha 5gr + air panas 40ml (80C, whisk hingga larut) + susu full cream 150ml + es batu 100gr. "
+             "Takaran untuk cup 12oz.", "terbit"),
             ("SOP Buka Toko", "SOP",
              "1. Nyalakan mesin 30 mnt sebelumnya 2. Kalibrasi espresso 3. Cek stok susu & es "
              "4. Bersihkan meja 5. Nyalakan kasir.", "terbit"),
