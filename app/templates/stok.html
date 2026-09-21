@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Stok{% endblock %}
+{% block content %}
+<h2 class="fw-bold mb-3">Stok Bahan</h2>
+<div class="row g-3">
+<div class="col-md-7">
+<div class="card"><div class="card-header fw-bold">Ringkasan</div>
+<table class="table table-sm mb-0"><thead><tr><th>Bahan</th><th>Sisa</th><th>Min.</th><th>Status</th></tr></thead><tbody>
+{% for b, sisa in ringkasan %}
+<tr><td>{{ b.nama }}<div class="text-muted small">{{ b.cara_penyimpanan[:60] if b.cara_penyimpanan else '' }}</div></td>
+<td>{{ "%.0f"|format(sisa or 0) }} {{ b.satuan }}</td><td>{{ "%.0f"|format(b.stok_minimum or 0) }}</td>
+<td>{% if (sisa or 0) <= (b.stok_minimum or 0) %}<span class="badge bg-danger">Menipis</span>{% else %}<span class="badge bg-success">Aman</span>{% endif %}</td></tr>
+{% endfor %}
+</tbody></table></div>
+<div class="card mt-3"><div class="card-header fw-bold">Mutasi terakhir</div>
+<ul class="list-group list-group-flush">
+{% for m in mutasi %}<li class="list-group-item d-flex justify-content-between"><span><span class="badge bg-{{ 'primary' if m.tipe=='masuk' else 'secondary' }}">{{ m.tipe }}</span> {{ m.bahan.nama }} — {{ "%.0f"|format(m.jumlah) }}</span><span class="text-muted small">{{ m.tanggal }}</span></li>
+{% endfor %}
+</ul></div>
+</div>
+<div class="col-md-5">
+<div class="card card-body mb-3"><h5 class="fw-bold">Catat masuk/keluar</h5>
+<form method="post" action="{{ url_for('stok.catat') }}">
+  <select name="bahan_id" class="form-select mb-2">{% for b, s in ringkasan %}<option value="{{ b.id }}">{{ b.nama }} ({{ b.satuan }})</option>{% endfor %}</select>
+  <div class="d-flex gap-2 mb-2"><select name="tipe" class="form-select"><option value="masuk">Masuk</option><option value="keluar">Keluar</option></select>
+  <input name="jumlah" type="number" step="any" min="0" class="form-control" placeholder="Jumlah" required></div>
+  <input name="keterangan" class="form-control mb-2" placeholder="Keterangan (opsional)">
+  <button class="btn btn-dark w-100">Simpan</button>
+</form></div>
+<div class="card card-body"><h5 class="fw-bold">Bahan baru</h5>
+<form method="post" action="{{ url_for('stok.tambah_bahan') }}">
+  <input name="nama" class="form-control mb-2" placeholder="Nama bahan" required>
+  <div class="d-flex gap-2 mb-2"><input name="satuan" class="form-control" placeholder="Satuan (gram/ml/pcs)" value="gram"><input name="stok_minimum" type="number" step="any" class="form-control" placeholder="Min." value="0"></div>
+  <input name="cara_penyimpanan" class="form-control mb-2" placeholder="Cara penyimpanan">
+  <button class="btn btn-outline-dark w-100">Tambah</button>
+</form></div>
+</div>
+</div>
+{% endblock %}

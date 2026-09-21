@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Pengetahuan{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="fw-bold">Pustaka Pengetahuan</h2>
+  <a href="{{ url_for('pengetahuan.baru') }}" class="btn btn-dark">+ Baru</a>
+</div>
+<form class="row g-2 mb-3" method="get">
+  <div class="col-md-6"><input name="q" value="{{ q }}" class="form-control" placeholder="Cari resep, SOP, supplier..."></div>
+  <div class="col-md-4">
+    <select name="kategori" class="form-select"><option value="">Semua kategori</option>
+      {% for k in kategoris %}<option value="{{ k.id }}" {% if kat_id==k.id|string %}selected{% endif %}>{{ k.nama }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="col-md-2"><button class="btn btn-outline-dark w-100">Cari</button></div>
+</form>
+<div class="row g-3">
+{% for p in items %}
+  <div class="col-md-6">
+    <div class="card h-100"><div class="card-body">
+      <span class="badge bg-secondary">{{ p.kategori.nama if p.kategori else '-' }}</span>
+      <span class="badge bg-{{ 'success' if p.status=='terbit' else 'warning text-dark' }}">{{ p.status }}</span>
+      <span class="badge bg-light text-dark">v{{ p.versi }}</span>
+      <h5 class="mt-2"><a href="{{ url_for('pengetahuan.detail', pid=p.id) }}" class="text-decoration-none text-dark">{{ p.judul }}</a></h5>
+      <p class="text-muted small">{{ p.deskripsi[:160] }}...</p>
+    </div></div>
+  </div>
+{% else %}
+  <p class="text-muted">Belum ada pengetahuan.</p>
+{% endfor %}
+</div>
+{% endblock %}

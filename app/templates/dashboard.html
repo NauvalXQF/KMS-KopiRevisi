@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<h2 class="fw-bold mb-3">Dashboard</h2>
+<div class="row g-3 mb-4">
+  <div class="col-md-3"><div class="card stat"><div class="card-body"><div class="stat-num">{{ total_pengetahuan }}</div><div class="text-muted">Pengetahuan terbit</div></div></div></div>
+  <div class="col-md-3"><div class="card stat"><div class="card-body"><div class="stat-num">{{ antrean }}</div><div class="text-muted">Antrean validasi</div><a href="{{ url_for('validasi.antrean') }}" class="small">Lihat →</a></div></div></div>
+  <div class="col-md-3"><div class="card stat"><div class="card-body"><div class="stat-num">{{ menipis|length }}</div><div class="text-muted">Bahan menipis</div><a href="{{ url_for('stok.daftar') }}" class="small">Lihat →</a></div></div></div>
+  <div class="col-md-3"><div class="card stat"><div class="card-body"><div class="stat-num">{{ komplain_baru }}</div><div class="text-muted">Komplain baru</div><a href="{{ url_for('komplain.daftar') }}" class="small">Lihat →</a></div></div></div>
+</div>
+<div class="row g-3">
+  <div class="col-md-4">
+    <div class="card h-100"><div class="card-header fw-bold">🏆 Menu terlaris</div>
+      <ul class="list-group list-group-flush">
+        {% for m in menu_laris %}<li class="list-group-item d-flex justify-content-between"><span>{{ m.nama_menu }}</span><b>{{ m.total }} cup</b></li>
+        {% else %}<li class="list-group-item text-muted">Belum ada data.</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100"><div class="card-header fw-bold">⏰ Jam ramai</div>
+      <ul class="list-group list-group-flush">
+        {% for j in jam_ramai %}<li class="list-group-item d-flex justify-content-between"><span>Pukul {{ j.jam }}:00</span><b>{{ j.total }} cup</b></li>
+        {% else %}<li class="list-group-item text-muted">Belum ada data.</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card h-100"><div class="card-header fw-bold">⚠️ Stok menipis</div>
+      <ul class="list-group list-group-flush">
+        {% for s in menipis %}<li class="list-group-item d-flex justify-content-between"><span>{{ s.nama }}</span><b class="text-danger">{{ "%.0f"|format(s.sisa or 0) }} {{ s.satuan }}</b></li>
+        {% else %}<li class="list-group-item text-success">Semua stok aman.</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

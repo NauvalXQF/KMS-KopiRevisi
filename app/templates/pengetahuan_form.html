@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}{% if p %}Edit{% else %}Baru{% endif %} Pengetahuan{% endblock %}
+{% block content %}
+<h2 class="fw-bold mb-3">{% if p %}Edit{% else %}Pengetahuan Baru{% endif %}</h2>
+<form method="post" enctype="multipart/form-data" class="card card-body">
+  <div class="mb-3"><label class="form-label">Judul</label><input name="judul" class="form-control" value="{{ p.judul if p else '' }}" required></div>
+  <div class="mb-3"><label class="form-label">Kategori</label>
+    <select name="kategori_id" class="form-select">
+      {% for k in kategoris %}<option value="{{ k.id }}" {% if p and p.kategori_id==k.id %}selected{% endif %}>{{ k.nama }}</option>{% endfor %}
+    </select>
+  </div>
+  <div class="mb-3"><label class="form-label">Deskripsi</label><textarea name="deskripsi" rows="6" class="form-control" required>{{ p.deskripsi if p else '' }}</textarea></div>
+  <div class="mb-3"><label class="form-label">Lampiran foto/video/pdf (opsional)</label><input type="file" name="lampiran" class="form-control" accept=".png,.jpg,.jpeg,.gif,.mp4,.mov,.pdf"></div>
+  <button class="btn btn-dark">Simpan</button>
+</form>
+{% endblock %}

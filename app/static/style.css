@@ -1,0 +1,8 @@
+body { background: #f6f1e8; }
+.navbar-brand { letter-spacing: .5px; }
+.card { border-radius: 14px; border: none; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+.card-header { background: #fff; border-bottom: 1px solid #eee; border-radius: 14px 14px 0 0 !important; }
+.stat-num { font-size: 2rem; font-weight: 800; }
+.btn-dark { background: #4b2e1e; border-color: #4b2e1e; }
+.btn-dark:hover { background: #38220f; border-color: #38220f; }
+a { color: #4b2e1e; }

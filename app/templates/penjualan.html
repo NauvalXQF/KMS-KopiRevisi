@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Penjualan{% endblock %}
+{% block content %}
+<h2 class="fw-bold mb-3">Penjualan</h2>
+<div class="row g-3 mb-3">
+  <div class="col-md-6"><div class="card stat"><div class="card-body"><div class="stat-num">{{ total_cup }}</div><div class="text-muted">Total cup</div></div></div></div>
+  <div class="col-md-6"><div class="card stat"><div class="card-body"><div class="stat-num">Rp {{ "%.0f"|format(total_omzet or 0) }}</div><div class="text-muted">Omzet</div></div></div></div>
+</div>
+<div class="row g-3">
+<div class="col-md-8"><div class="card"><div class="card-header fw-bold">Riwayat</div>
+<table class="table table-sm mb-0"><thead><tr><th>Waktu</th><th>Menu</th><th>Jml</th><th>Harga</th></tr></thead><tbody>
+{% for p in items %}<tr><td class="small">{{ p.waktu }}</td><td>{{ p.nama_menu }}</td><td>{{ p.jumlah }}</td><td>Rp {{ p.harga_satuan }}</td></tr>{% endfor %}
+</tbody></table></div></div>
+<div class="col-md-4"><div class="card card-body"><h5 class="fw-bold">Catat penjualan</h5>
+<form method="post" action="{{ url_for('penjualan.tambah') }}">
+  <input name="nama_menu" class="form-control mb-2" placeholder="Nama menu" required>
+  <div class="d-flex gap-2 mb-2"><input name="jumlah" type="number" min="1" value="1" class="form-control"><input name="harga_satuan" type="number" step="any" class="form-control" placeholder="Harga" required></div>
+  <button class="btn btn-dark w-100">Simpan</button>
+</form></div></div>
+</div>
+{% endblock %}

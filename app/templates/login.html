@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        <h3 class="fw-bold mb-1">☕ KMS Kopi</h3>
+        <p class="text-muted">Login dengan PIN. Demo: pemilik <code>1111</code>, karyawan <code>2222</code>.</p>
+        <form method="post">
+          <div class="mb-3">
+            <label class="form-label">Nama (opsional)</label>
+            <input name="nama" class="form-control" placeholder="cth: Pemilik">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">PIN</label>
+            <input name="pin" type="password" inputmode="numeric" class="form-control form-control-lg" placeholder="••••" required autofocus>
+          </div>
+          <button class="btn btn-dark w-100 btn-lg">Masuk</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

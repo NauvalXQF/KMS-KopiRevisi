@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Komplain{% endblock %}
+{% block content %}
+<h2 class="fw-bold mb-3">Log Komplain</h2>
+<div class="row g-3">
+<div class="col-md-7">
+{% for k in items %}
+<div class="card mb-2"><div class="card-body">
+  <span class="badge bg-{{ 'success' if k.status=='selesai' else 'primary' if k.status=='diproses' else 'danger' }}">{{ k.status }}</span>
+  <b>{{ k.jenis }}</b> <span class="text-muted small">{{ k.tanggal }}</span>
+  <p class="mb-1 small">{{ k.deskripsi }}</p>
+  {% if k.solusi %}<div class="small"><b>Solusi:</b> {{ k.solusi }}</div>{% endif %}
+  {% if k.tindak_lanjut %}<div class="small"><b>Tindak lanjut:</b> {{ k.tindak_lanjut }}</div>{% endif %}
+  <form method="post" action="{{ url_for('komplain.update', kid=k.id) }}" class="row g-1 mt-2">
+    <div class="col-4"><input name="solusi" class="form-control form-control-sm" placeholder="Solusi" value="{{ k.solusi or '' }}"></div>
+    <div class="col-4"><input name="tindak_lanjut" class="form-control form-control-sm" placeholder="Tindak lanjut" value="{{ k.tindak_lanjut or '' }}"></div>
+    <div class="col-2"><select name="status" class="form-select form-select-sm"><option value="baru" {% if k.status=='baru' %}selected{% endif %}>baru</option><option value="diproses" {% if k.status=='diproses' %}selected{% endif %}>diproses</option><option value="selesai" {% if k.status=='selesai' %}selected{% endif %}>selesai</option></select></div>
+    <div class="col-2"><button class="btn btn-sm btn-outline-dark w-100">Update</button></div>
+  </form>
+</div></div>
+{% else %}<p class="text-muted">Belum ada komplain.</p>{% endfor %}
+</div>
+<div class="col-md-5"><div class="card card-body"><h5 class="fw-bold">Komplain baru</h5>
+<form method="post" action="{{ url_for('komplain.tambah') }}">
+  <input name="jenis" class="form-control mb-2" placeholder="Jenis (cth: Rasa, Pelayanan)" required>
+  <textarea name="deskripsi" class="form-control mb-2" placeholder="Deskripsi" required></textarea>
+  <input name="solusi" class="form-control mb-2" placeholder="Solusi (opsional)">
+  <input name="tindak_lanjut" class="form-control mb-2" placeholder="Tindak lanjut (opsional)">
+  <button class="btn btn-dark w-100">Simpan</button>
+</form></div></div>
+</div>
+{% endblock %}
